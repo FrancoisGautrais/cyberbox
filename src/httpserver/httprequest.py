@@ -138,7 +138,7 @@ class HTTPRequest(_HTTP):
 
     def parse(self):
         self._parse_head()
-        if not self.header("Content-Type").startswith("multipart/form-data;"):
+        if ("Content-Type" in self._headers) and not self.header("Content-Type").startswith("multipart/form-data;"):
             self._parse_body()
 
     def multipart_next_file(self):

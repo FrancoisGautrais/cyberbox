@@ -36,11 +36,11 @@ class SocketWrapper:
     def read_str(self, len=1):
         return str(self.read(len), encoding="utf8")
 
-    def readline(self):
+    def readline(self, encoding="utf8"):
         out=""
         x=self.read(1)
         while x[0]!=10:
-            out+=x.decode("utf8")
+            out+=x.decode(encoding, "replace")
             x = self.read(1)
         return out
 
@@ -50,7 +50,6 @@ class SocketWrapper:
     # put bytes before next read
     def rewind(self, b):
         self.buffer+=b
-        print(b)
 
     def close(self):
         try:

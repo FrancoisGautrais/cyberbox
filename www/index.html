@@ -1,20 +1,101 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <form name="formu" action="traitement.php" method="post" enctype="multipart/form-data">
-     On remarque qu'il faut ajouter entype="multipart/form-data" pour uploader un fichier
-     Votre fichier
-        <input type="file" name="fichier" accept="*/*" /><br/>
-        <input type="file" name="fichier2" accept="*/*" /><br/>
-     <input type="submit" value="Go !!!!" />
-    </form>
+<html>
 
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script type="text/javascript" src="js/materialize.min.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
+<head>
+  <meta charset="UTF-8">
+  <link href="css/demo.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="/css/materialize.css">
+  <link rel="stylesheet" type="text/css" href="/css/icons.css">
+  <title>Authentification</title>
+
+</head>
+<style>
+.cardcolor{
+    color: #ffffff;
+}
+
+.rowNoMargin {
+    margin-bottom: 0px;
+}
+
+.container {
+    width: 100%;
+    max-width: none;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.menu {
+    font-size: 2vw;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+.menuback {
+    font-size: 2.5vw !important;
+}
+</style>
+<body>
+    <main>
+        <nav>
+            <div class="nav-wrapper">
+              <ul id="nav-mobile" class="center hide-on-med-and-down">
+                <li><a href="sass.html">Sass</a></li>
+                <li><a href="badges.html">Components</a></li>
+                <li><a href="collapsible.html">JavaScript</a></li>
+              </ul>
+            </div>
+          </nav>
+        <nav>
+        <div class="nav-wrapper">
+
+
+          <ul id="nav-" class="hide-on-med-and-down">
+              <li>
+                <a href="/browse/{{parent}}" class="white-text"><i class="material-icons menuback">keyboard_backspace</i></a>
+                </li>
+              <div class="autoreplace" data-type="menupath" data-value="{{path}}"></div>
+
+          </ul>
+        </div>
+      </nav>
+        <div class="container">
+
+            <div class="row">
+            {{#ls}}
+                <div class="col s3 m4">
+                    <div class="card blue-grey darken-1">
+                        <a href="{{url_prefix}}{{dir}}{{name}}">
+                            <div class="row rowNoMargin">
+                                <div class="white-text col s2">
+                                    <center><i class="large material-icons">
+                                        {{#is_dir}}folder{{/is_dir}}
+                                        {{^is_dir}}<div class="autoreplace" data-type="mime" data-value="{{mime}}"></div>{{/is_dir}}
+                                    </i></center>
+                                </div>
+                                <div class="card-content white-text col s10" >
+                                    <center><span class="card-title">{{name}}</span></center>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="card-action">
+                                <span class="cardcolor" >
+                                    {{#is_dir}}<bold>{{length}} éléments</bold>{{/is_dir}}
+                                    {{^is_dir}}<div class="autoreplace" data-type="size" data-value="{{size}}"></div>{{/is_dir}}
+                                </span>
+                           <span class="cardcolor right" >
+                                <i class="small material-icons">info</i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            {{/ls}}
+            </div>
+        </div>
+
+    </main>
+
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/materialize.min.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
 </body>
+
 </html>

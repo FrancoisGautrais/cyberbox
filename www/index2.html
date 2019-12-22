@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Cyberbox</title>
+</head>
+<body>
+    <form name="formu" action="/upload/{{path}}" method="post" enctype="multipart/form-data">
+     On remarque qu'il faut ajouter entype="multipart/form-data" pour uploader un fichier
+     Votre fichier
+        <input type="file" name="fichier" accept="*/*" /><br/>
+        <input type="file" name="fichier2" accept="*/*" /><br/>
+     <input type="submit" value="Go !!!!" />
+    </form>
+    <ul>
+        {{^is_root}}
+            <li><a href="/browse/{{parent}}">..</a></li>
+        {{/is_root}}
+        {{#ls}}
+            <li><a href="{{url_prefix}}{{dir}}{{name}}">{{name}}
+                {{^is_dir}}: {{download}} {{/is_dir}}</a></li>
+        {{/ls}}
+    </ul>
+
+
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/materialize.min.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+</body>
+</html>

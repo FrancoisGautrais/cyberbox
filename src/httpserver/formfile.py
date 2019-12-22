@@ -10,6 +10,7 @@ class FormFile:
         self.soc=soc
         self.boundary=bytes("--"+boundary, "ascii")
         self.filename=""
+        self.name=""
         self.mime=""
         self.attrs={}
 
@@ -33,6 +34,8 @@ class FormFile:
                 val=v
             self.attrs[key]=val
         self.soc.readline()
+        self.name=self.attrs["Content-Disposition"]["name"][1:-1]
+        self.filename=self.attrs["Content-Disposition"]["filename"][1:-1]
         return True
     NO_BOUND=0
     SIMPLE_BOUND=1
@@ -51,8 +54,18 @@ class FormFile:
 
 
     def save(self, p):
-        out=path.normpath(conf.share(p)+"/"+self.attrs["Content-Disposition"]["name"])
-        print(out)
+        out=path.normpath(conf.share(p)+"/"+self.filename)
+
+        # si 'out" est un dossier => filename = "" => Pas de fichier
+        if self.filename=="":
+            while True:
+                self.soc.read(1)
+                bound=self.is_bound()
+                if bound == FormFile.END_BOUND:
+                    return False
+                elif bound == FormFile.SIMPLE_BOUND:
+                    return True
+        print("Write : ", out)
         with open(out, "wb") as f:
             x=self.soc.read(1)
             while True:
