@@ -3,7 +3,7 @@ from os import path
 
 test = 23
 WWW_DIR = "www"
-LISTEN_HOST = "localhost"
+LISTEN_HOST = ""
 LISTEN_PORT = 8080
 SHARE_DIR = "share/"
 SAVE_DIR = "save/"

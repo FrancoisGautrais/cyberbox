@@ -1,0 +1,61 @@
+{{^is_root}}
+    <div class="col s4 m3 l2">
+        <div class="card">
+            <a href="/browse/{{dir}}"><center><i class="tile-icon material-icons color-2">keyboard_backspace</i></center></a>
+            <div class="custom-card-action card-action ">
+                    <span class="color-5" >
+                    <center class="tile-filename">Retour<br><br><br><br> </center>
+                </span>
+            </div>
+        </div>
+    </div>
+{{/is_root}}
+
+<div class="col s4 m3 l2">
+    <div class="card">
+        <a onclick="on_upload()"><center><i class="tile-icon material-icons color-1">add</i></center></a>
+        <div class="custom-card-action card-action ">
+                <span class="color-5" >
+                <center class="tile-filename">Ajouter un fichier<br><br><br><br> </center>
+            </span>
+        </div>
+    </div>
+</div>
+{{#ls}}
+    <div class="col s4 m3 l2">
+        <div class="card light-grey darken-2">
+            <a href="{{url_prefix}}{{dir}}{{name}}">
+                <center>
+                    <i class="material-icons color-3 tile-icon">
+                        {{#is_dir}}folder{{/is_dir}}
+                        {{^is_dir}}<div class="autoreplace" data-type="mime" data-value="{{mime}}"></div>{{/is_dir}}
+                    </i>
+                </center>
+            </a>
+            <div class="custom-card-action card-action ">
+                <span class="color-5">
+                    <center class="tile-filename"><div class="autoreplace" data-type="boundtext" data-value="{{name}}"></div></center>
+                    <center class="tile-filename">{{^is_dir}}<div class="autoreplace" data-type="size" data-value="{{size}}"></div>{{/is_dir}}
+                    {{#is_dir}}<div>{{length}} éléments</div>{{/is_dir}}</center>
+                </span>
+            </div>
+        </div>
+    </div>
+{{/ls}}
+
+<style>
+.custom-card-action {
+    padding-top: 5px ! important;
+    padding-bottom: 5px ! important;
+    padding-left: 5px ! important;
+    padding-right: 5px ! important;
+}
+
+.tile-icon {
+    font-size: 150px;
+}
+
+.tile-filename {
+    font-size: 24px ! important;
+}
+</style>

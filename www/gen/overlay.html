@@ -1,0 +1,66 @@
+<input type="file" id="file" name="file" class="hidden-button"/>
+<div id="overlay" class="overlay onoverlay" onclick="toggleOverlay()"></div>
+<div class="overlay-content onoverlay card light-grey darken-1">
+    <div class="card-content">
+        <center><span class="card-title">Ajouter un fichier</span></center>
+    </div>
+    <div class="card-action">
+        <div class="row" id="cardform">
+            <div class="input-field col s12">
+                <input disabled value="" id="filepathinput" type="text" class="validate">
+                <label for="filepathinput"></label>
+            </div>
+            <a class="waves-effect waves-light btn" onclick="sendfile()">Envoyer</a>
+        </div>
+        <div id="divloading">
+            <center>
+                <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="gap-patch">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
+                    </div>
+                </div>
+            </center>
+        </div>
+    </div>
+</div>
+
+
+<style>
+.overlay{
+    height: 100%;
+    width: 100%;
+    background-color: #7f7f7f;
+    opacity: 0.5;
+    position: absolute;
+    z-index: 10;
+    display: none;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.overlay-content {
+    height: 66%;
+    display: none;
+    width: 66%;
+    background-color: rgba(255,255,255,1);
+    position: absolute;
+    top: 17%;
+    left: 17%;
+    z-index: 11;
+}
+
+.hidden-button {
+    position: absolute;
+    top: -100px;
+}
+
+.onoverlay{
+}
+</style>

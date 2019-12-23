@@ -4,6 +4,7 @@ import os
 from .utils import mime
 from .socketwrapper import SocketWrapper
 from .formfile import FormFile
+from .htmlgen import html_gen
 
 HTTP_OK=200
 HTTP_BAD_REQUEST=400
@@ -184,7 +185,9 @@ class HTTPRequest(_HTTP):
 
         if ct in JSON_MIME:
             self._body_type=BODY_DICT
-            self.body=json.loads(self._socket.read(cl).decode("utf8"))
+            content=self._socket.read(cl).decode("utf8")
+            print(content)
+            self.body=json.loads(content)
         elif ct in URLENCODED_MIME:
             self._body_type=BODY_DICT
             self.body=parse_urlencoded_params(self._socket.read(cl).decode("utf8"))
@@ -252,10 +255,14 @@ class HTTPResponse(_HTTP):
         else:
             self._body_type=BODY_EMPTY
 
+    def serve_file_gen(self, path : str, data):
+        self.content_type(mime(path))
+        self.header("Content-Length", str(os.stat(path).st_size))
+        self.header("Content-Type", mime(path))
+        self.end(html_gen(path, data))
 
 
     def serve_file(self, path : str, urlReq=None, forceDownload=False):
-
         fd=None
         try:
             fd=open(path, "rb")
@@ -276,7 +283,8 @@ class HTTPResponse(_HTTP):
         if forceDownload:
             self.header("Content-Disposition", "attachment; filename=\""+\
                     os.path.basename(path)+"\"")
-        self.end(open(path, "rb").read())
+        with open(path, "rb") as f:
+            self.end(f.read())
         #self.end(open(path, "rb"))
 
     def _set_json_response(self, httpcode : int, code : int , msg : str, js):

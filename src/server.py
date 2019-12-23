@@ -1,14 +1,11 @@
 import os
-from .httpserver.restserver import Callback, HTTPRequest, HTTPResponse, HTTPServer
+
+from src.user import User
+from .httpserver.restserver import HTTPRequest, HTTPResponse, HTTPServer
 from src import conf
-from os import path
-import pystache
 from .filedb import FileDB
-
-def html_template(path, data):
-    with open(path) as file:
-        return pystache.render(file.read(), data)
-
+from src.httpserver.htmlgen import html_gen
+from src.usersdb import UserDB
 class Server(HTTPServer):
     UPLOAD_URL="/upload/"
     SHARE_URL = "/share/"
@@ -16,18 +13,39 @@ class Server(HTTPServer):
     def __init__(self):
         HTTPServer.__init__(self, conf.LISTEN_HOST)
         self.db=FileDB.load()
+        self.users=UserDB.load()
+
+    def find_client(self, req : HTTPRequest, res : HTTPResponse, isAction):
+        client=None
+        if "session" in req.cookies:
+            client=self.users.find_user(req.cookies["session"])
+        if not client:
+            client = self.users.new_user(req.header("User-Agent"))
+            res.header("Set-Cookie", "session="+client.id+"; Max-Age="+str(User.DUREE_SESSION))
+        if isAction: client.inc_actions()
+        return client
 
     def handlerequest(self, req : HTTPRequest, res : HTTPResponse):
+        client=self.find_client(req, res, False)
         if req.method=="GET":
             if req.path.startswith(Server.SHARE_URL[:-1]):
                 return self.handle_download(req, res)
-            if req.path.startswith(Server.BROWSE_URL[:-1]):
+            elif req.path.startswith(Server.BROWSE_URL[:-1]):
                 return self.handle_browse(req,res)
-            return self.handle_www(req, res)
+            elif req.path == "/preferences.html":
+                res.serve_file_gen(conf.www("preferences.html"), client.json())
+                return
+            else:
+                self.handle_www(req, res)
+                return
 
         if req.method=="POST":
             if req.path.startswith(Server.UPLOAD_URL[:-1]):
                 return self.handle_upload(req, res)
+            if req.path=="/user/modify":
+                return self.users.modify(client.id, req.body_json())
+            if req.path=="/user/delete":
+                return self.users.delete(client.id)
 
         self.handle_404(req, res)
 
@@ -36,7 +54,6 @@ class Server(HTTPServer):
         path = conf.www(req.path[1:])
         if not os.path.isfile(path):
             return self.handle_404(req,res)
-
         res.serve_file(path)
 
     def handle_browse(self, req : HTTPRequest, res : HTTPResponse):
@@ -46,7 +63,7 @@ class Server(HTTPServer):
             res.content_type("text/html")
             x=self.db.moustache(relpath)
             print(relpath)
-            res.end(html_template(conf.www("index.html"),{
+            res.end(html_gen(conf.www("index.html"),{
                 "path" : relpath,
                 "ls" : x,
                 "parent" : os.path.normpath(relpath+"/..") if (len(relpath)>0) else "",

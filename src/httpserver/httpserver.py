@@ -1,7 +1,6 @@
 from .socketwrapper import SocketWrapper, ServerSocket
 from .httprequest import HTTPResponse, HTTPRequest, testurl, HTTP_OK, STR_HTTP_ERROR, HTTP_NOT_FOUND
 from .utils import Callback, start_thread
-
 import os
 import time
 
@@ -36,3 +35,6 @@ class HTTPServer(ServerSocket):
 
     def serve_file(self, req: HTTPRequest, res : HTTPResponse):
         res.serve_file(os.path.join(self.www_dir, req.path[1:]))
+
+    def serve_file_gen(self, req: HTTPRequest, res : HTTPResponse, data):
+        res.serve_file_gen(os.path.join(self.www_dir, req.path[1:]), data)
