@@ -5,7 +5,6 @@ if [ "$PYTHONPATH" == "" ]; then
 else
 	export PYTHONPATH=$PYTHONPATH:$DIR
 fi
-echo $DIR/src
-echo $PYTHONPATH
+
 cd $DIR/src
 python3 main.py >  ../log/cyberbox.log 2>&1
