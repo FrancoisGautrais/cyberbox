@@ -2,4 +2,4 @@
 DIR=$(dirname $0)
 export PYTHONPATH=$PYTHONPATH:$DIR
 cd $DIR/src
-python3 main.py
+python3 main.py >  ../log/cyberbox.log 2>&1
