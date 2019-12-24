@@ -7,6 +7,7 @@ LISTEN_HOST = ""
 LISTEN_PORT = 8080
 SHARE_DIR = "share/"
 SAVE_DIR = "save/"
+PIDFILE="/var/cyberbox.pid"
 
 class Conf:
     _INITIALIZED=False
