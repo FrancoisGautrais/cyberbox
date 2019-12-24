@@ -2,4 +2,4 @@
 DIR=$(dirname $0)
 export PYTHONPATH=$PYTHONPATH:$DIR
 cd $DIR/src
-./main
+python3 main.py
