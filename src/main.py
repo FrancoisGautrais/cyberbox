@@ -10,8 +10,12 @@ print(sys.argv)
 
 def do_pidfile():
     if sys.platform.startswith("linux"):
-        with open(conf.PIDFILE, "w") as f:
-            f.write(str(os.getpid()))
+        try:
+            with open(conf.PIDFILE, "w") as f:
+                f.write(str(os.getpid()))
+        except:
+            print("Impossible de creer le fichier pid ",conf.PIDFILE)
+            pass
     else:
         print("Running on windows, no pidfile")
 

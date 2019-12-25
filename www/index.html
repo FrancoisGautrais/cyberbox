@@ -10,7 +10,7 @@
 </head>
 <style>
 
-<#include(../www/gen/colors.css)>
+<#include("../www/gen/colors.css")>
 
 
 html{
@@ -38,20 +38,20 @@ body {
 
 </style>
 <body>
-    <#include(../www/gen/nav.html)>
+    <#include("../www/gen/nav.html")>
     <div class="const" id="CONST_PATH">{{path}}</div>
-    <#include(../www/gen/overlay.html)>
+    <#include("../www/gen/overlay.html")>
 
 
     <main>
         <div class="container">
             <div class="row">
-                <#include(../www/gen/files_tiles.html)>
+                <#include(cat("../www/gen/files_", get("user","display"),".html"))>
             </div>
         </div>
     </main>
 
-    <#include(../www/gen/footer.html)>
+    <#include("../www/gen/footer.html")>
     <script type="text/javascript" src="/js/jquery.min.js"></script>
     <script type="text/javascript" src="/js/materialize.min.js"></script>
     <script type="text/javascript" src="/js/index.js"></script>

@@ -4,7 +4,7 @@ import os
 from .utils import mime
 from .socketwrapper import SocketWrapper
 from .formfile import FormFile
-from .htmlgen import html_gen
+from src.httpserver.htmltemplate.htmlgen import html_gen
 
 HTTP_OK=200
 HTTP_BAD_REQUEST=400
@@ -51,7 +51,7 @@ BODY_STRING="string"
 BODY_FILE="file"
 BODY_BYTES="bytes"
 
-from urllib.parse import quote, unquote
+from urllib.parse import unquote
 
 JSON_MIME=["application/json", "application/x-javascript", "text/javascript", "text/x-javascript", "text/x-json"]
 URLENCODED_MIME= [ "application/x-www-form-urlencoded" ]

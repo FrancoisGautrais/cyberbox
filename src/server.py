@@ -4,7 +4,7 @@ from src.user import User
 from .httpserver.restserver import HTTPRequest, HTTPResponse, HTTPServer
 from src import conf
 from .filedb import FileDB
-from src.httpserver.htmlgen import html_gen
+from src.httpserver.htmltemplate.htmlgen import html_gen
 from src.usersdb import UserDB
 class Server(HTTPServer):
     UPLOAD_URL="/upload/"
@@ -57,6 +57,7 @@ class Server(HTTPServer):
         res.serve_file(path)
 
     def handle_browse(self, req : HTTPRequest, res : HTTPResponse):
+        client = self.find_client(req, res, False)
         relpath=req.path[len(Server.BROWSE_URL):]
         abspath = conf.share(relpath)
         if os.path.isdir(abspath):
@@ -67,7 +68,8 @@ class Server(HTTPServer):
                 "path" : relpath,
                 "ls" : x,
                 "parent" : os.path.normpath(relpath+"/..") if (len(relpath)>0) else "",
-                "is_root" :  (len(relpath)==0)
+                "is_root" :  (len(relpath)==0),
+                "user" : client.json()
             }))
             return
         self.handle_404(req,res)
