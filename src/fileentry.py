@@ -31,12 +31,14 @@ class _Entry:
     F_CREATION="creation"
     F_NAME="name"
     F_TYPE="type"
+    F_HIDDEN="hidden"
 
     def __init__(self, type, dir, js):
         self.dir=dir
         self.type=type if type else js[_Entry.F_NAME]
         self.creation=_attr(js, _Entry.F_CREATION, -1)
         self.name=_attr(js, _Entry.F_NAME, "")
+        self.hidden=_attr(js, _Entry.F_HIDDEN, True if len(self.name)>0 and self.name[0]=="." else False)
 
         self.reldir=self.dir
         self.relpath=os.path.join(self.reldir, self.name)
@@ -55,14 +57,16 @@ class _Entry:
         return {
             _Entry.F_NAME: self.name,
             _Entry.F_CREATION: self.creation,
-            _Entry.F_TYPE: self.type
+            _Entry.F_TYPE: self.type,
+            _Entry.F_HIDDEN: self.hidden
         }
 
-    def moustache(self, recursive=False):
+    def moustache(self, recursive=False, showHdden=False):
         x=_Entry.json(self)
         x["dir"]=self.dir+("/" if len(self.dir)>0 else "")
         x["url_prefix"]="/browse/" if self.isdir() else "/share/"
         x["is_dir"]=self.isdir()
+        x["hidden"]=self.hidden
         return x
 
     def update(self):
@@ -73,6 +77,9 @@ class _Entry:
 
     def isdir(self):
         return self.type==_Entry.DIRECTORY
+
+    def modify(self, data):
+        if FileEntry.F_HIDDEN in data: self.hidden=data[FileEntry.F_HIDDEN]
 
 class FileEntry(_Entry):
     F_SIZE="size"
@@ -95,7 +102,7 @@ class FileEntry(_Entry):
         })
         return ret
 
-    def moustache(self, recursive=False):
+    def moustache(self, recursive=False, showHdden=False):
         ret=_Entry.moustache(self)
         ret.update({
             FileEntry.F_SIZE: self.size,
@@ -113,6 +120,10 @@ class FileEntry(_Entry):
 
     def remove(self):
         os.remove(self.abspath)
+
+    def modify(self, data):
+        _Entry.modify(self, data)
+        if FileEntry.F_DOWNLOAD in data: self.download=data[FileEntry.F_DOWNLOAD]
 
 class DirEntry(_Entry):
     F_CHILDREN="children"
@@ -132,18 +143,20 @@ class DirEntry(_Entry):
         ret[DirEntry.F_CHILDREN]=children
         return ret
 
+    def modify(self, data):
+        _Entry.modify(self, data)
 
-    def moustache(self, first=True):
+    def moustache(self, first=True, showHdden=False):
         if not first:
-            ret = _Entry.moustache(self)
+            ret = _Entry.moustache(self, showHdden)
             ret["length"]=len(self.children)
             return ret
         else:
             children=[]
             for child in self.children:
-                children.append(self.children[child].moustache(False))
+                if not self.children[child].hidden or showHdden:
+                    children.append(self.children[child].moustache(False, showHdden))
             return children
-
 
     def remove(self):
         for f in self.children:

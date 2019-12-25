@@ -1,7 +1,7 @@
 from src.utils import html_template_string
 from src.httpserver.htmltemplate.lexer import Lexer
 
-
+from .instructions_loader import call
 
 
 
@@ -50,22 +50,9 @@ class Instruction:
 
 
     def value(self):
-        if self.inst=="include":
-            with open(self.args[0]) as f:
-                return f.read()
-
-        if self.inst=="get":
-            acc=self.data
-            for x in self.args:
-                acc=acc[x]
-            return acc
-
-        if self.inst=="cat":
-            acc=""
-            for x in self.args:
-                acc+=str(x)
-            return acc
-        raise Exception("Error unknown instruction '",self.inst,"'")
+        x = call(self.inst, self.args, self.data)
+        if x==None: return ""
+        return x
 
 class HtmlGen:
 

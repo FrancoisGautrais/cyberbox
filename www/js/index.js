@@ -1,26 +1,10 @@
-$(document).ready(function(){
+function main(){
     autoreplaceall()
     $("#clicktrigger").on("click", function() {
         $("#file").trigger("click");
     });
-    $(function() {
-        $("#file").change(function (){
-            toggleOverlay();
-            cardform();
-            var fileName = $(this).val();
-            $("#filepathinput").attr("value", fileName.substr(12))
+}
 
-        });
-    });
-  });
-    document.addEventListener('DOMContentLoaded', function() {
-    var elems = document.querySelectorAll('.sidenav');
-    var instances = M.Sidenav.init(elems, {});
-    M.updateTextFields();
-    $(function() {
-        M.updateTextFields();
-    });
-});
 
 function sendfile()
 {
@@ -72,30 +56,29 @@ function toggleOverlay()
 
 function min(x,y){ return x>y?x:y }
 
-function replaceBoundText(el, text){
+function autoreplace_boundtext(text){
     max_size=13
     nline=3
     text = text.length>nline*max_size ? text.substr(0,max_size*nline-3)+"...": text
-    out=[]
-    parent=$(el).parent()
-    el.remove()
+    out=""
     for(var i=0; i<nline; i++)
     {
         line=min(text.length, text.substr(0, max_size))
         text=text.substr(max_size)
-        parent.append(line+"<br>")
+        out+=line+"<br>"
     }
-
+    return out
 }
 
-function replaceSize(value){
+function autoreplace_size(value){
     if(value>=GB) return (value/GB).toFixed(1)+" Gio"
     if(value>=MB) return (value/MB).toFixed(1)+" Mio"
     if(value>=KB) return (value/KB).toFixed(1)+" Kio"
     return value+" o"
 }
-m=null
-function replaceMime(mime) {
+
+
+function autoreplace_mime(mime) {
     if(mime.startsWith("audio/")) return "audiotrack"
     if(mime.startsWith("video/")) return "movie"
     if(mime.startsWith("image/")) return "photo"
@@ -107,23 +90,7 @@ function replaceMime(mime) {
     return "insert_drive_file"
 }
 
-function handleReplace(el, type, value){
-    switch (type) {
-        case "size": return el.replaceWith(replaceSize(parseInt(value)))
-        case "mime": return el.replaceWith(replaceMime(value))
-        case "boundtext": return replaceBoundText(el, value)
-        case "menupath":
-            x=handleMenu(value)
-            for( i in x){
-            console.log(x[i])
-                $(el).parent().append(x[i])
-            }
-            //el.remove()
-            return
-    }
-}
-
-function handleMenu(path)
+function autoreplace_menupath(path)
 {
     path=path.split('/')
     acc="/browse/"
@@ -140,14 +107,26 @@ function handleMenu(path)
     return out
 }
 
-function autoreplaceall()
-{
-    $(".autoreplace").each(function(index, el){
-        handleReplace(el, el.attributes["data-type"].value, el.attributes["data-value"].value)
-    })
-}
+
 
 function on_upload()
 {
     $("#file").click()
 }
+/*
+function handleReplace(el, type, value){
+    switch (type) {
+        case "size": return el.replaceWith(autoreplace_size(parseInt(value)))
+        case "mime": return el.replaceWith(autoreplace_mime(value))
+        case "boundtext": return autoreplace_boundtext(el, value)
+        case "menupath":
+            x=autoreplace_menupath(value)
+            for( i in x){
+            console.log(x[i])
+                $(el).parent().append(x[i])
+            }
+            //el.remove()
+            return
+    }
+}
+*/

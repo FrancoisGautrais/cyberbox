@@ -22,10 +22,10 @@ class FileDB:
         if obj: return obj.json()
         return None
 
-    def moustache(self, path=""):
+    def moustache(self, path="", isAdmin=False):
         obj = self.find(path)
         if obj:
-            return obj.moustache()
+            return obj.moustache(showHdden=isAdmin)
         return None
 
     def inc_download(self, path, n=1):
@@ -37,10 +37,21 @@ class FileDB:
         else:
             return False
 
+    def modify(self, path, data):
+        obj=self.find(path)
+        obj.modify(data)
+
     def remove(self, path):
-        obj = self.find(path)
+        if path[-1]=="/": path=path[:-1]
+        path=path.split("/")
+        parent=self.find('/'.join(path[:-1]))
+        name=path[-1]
+
+        parent = self.find(parent)
+        obj = parent.children[name]
         if obj:
             obj.remove()
+            del parent.children[name]
             self.save()
             return True
         return False

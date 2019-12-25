@@ -11,6 +11,7 @@ class User:
         self.id=""
         self.infos=""
         self.actions=0
+        self.admin=False
         self.display="list"
         self.validity=time.time()+User.DUREE_SESSION
         if js:
@@ -23,8 +24,11 @@ class User:
         self.actions=js["actions"] if "actions" in js else self.actions
         self.infos=js["infos"] if "infos" in js else self.infos
         self.validity=js["validity"] if "validity" in js else self.validity
+        self.admin=js["admin"] if "admin" in js else self.admin
         self.display=js["display"] if "display" in js else self.display
 
+    def is_admin(self):
+        return self.admin
 
     def set_infos(self, infos):
         self.infos=infos
@@ -45,6 +49,7 @@ class User:
             "infos" : self.infos,
             "validity": self.validity,
             "display": self.display,
+            "admin": self.admin
         }
 
     @staticmethod

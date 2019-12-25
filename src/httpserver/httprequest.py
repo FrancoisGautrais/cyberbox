@@ -262,7 +262,10 @@ class HTTPResponse(_HTTP):
         self.end(html_gen(path, data))
 
 
-    def serve_file(self, path : str, urlReq=None, forceDownload=False):
+    def serve_file(self, path : str, urlReq=None, forceDownload=False, data={}):
+        if path.endswith(".html"):
+            return self.serve_file_gen(path, data)
+
         fd=None
         try:
             fd=open(path, "rb")
@@ -280,6 +283,7 @@ class HTTPResponse(_HTTP):
         self.content_type(mime(path))
         self.header("Content-Length", str(os.stat(path).st_size))
         self.header("Content-Type", mime(path))
+
         if forceDownload:
             self.header("Content-Disposition", "attachment; filename=\""+\
                     os.path.basename(path)+"\"")

@@ -1,0 +1,22 @@
+html{
+    height: 100%;
+}
+
+body {
+    height: 100%;
+}
+.container {
+    width: 100%;
+    max-width: none;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+main {
+    min-height: calc(100% - 128px);
+    padding-top: 20px;
+}
+
+.const {
+    display: none;
+}

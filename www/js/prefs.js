@@ -1,20 +1,12 @@
-$(document).ready(function(){
-    $('select').formSelect();
+function main(){
 
     $("#select_display").val($("#DISPLAY").html());
     $('select').formSelect();
 
 
-});
+}
 
-document.addEventListener('DOMContentLoaded', function() {
-    var elems = document.querySelectorAll('.sidenav');
-    var instances = M.Sidenav.init(elems, {});
-    M.updateTextFields();
-    $(function() {
-        M.updateTextFields();
-    });
-});
+
 
 function on_erease()
 {
