@@ -186,7 +186,6 @@ class HTTPRequest(_HTTP):
         if ct in JSON_MIME:
             self._body_type=BODY_DICT
             content=self._socket.read(cl).decode("utf8")
-            print(content)
             self.body=json.loads(content)
         elif ct in URLENCODED_MIME:
             self._body_type=BODY_DICT

@@ -3,10 +3,8 @@ from src.server import Server
 import sys
 import os
 import signal
+from src.httpserver import log
 
-
-
-print(sys.argv)
 
 def do_pidfile():
     if sys.platform.startswith("linux"):
@@ -14,10 +12,10 @@ def do_pidfile():
             with open(conf.PIDFILE, "w") as f:
                 f.write(str(os.getpid()))
         except:
-            print("Impossible de creer le fichier pid ",conf.PIDFILE)
+            log.error("Impossible de creer le fichier pid ", conf.PIDFILE)
             pass
     else:
-        print("Running on windows, no pidfile")
+        log.info("Running on windows, no pidfile")
 
 def get_server_pid():
     out=-1

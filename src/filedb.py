@@ -58,9 +58,11 @@ class FileDB:
 
     def add(self, dir, name):
         objdir=self.find(dir)
+        ret=True
         if objdir and objdir.isdir():
-            objdir.add(name)
+            ret=objdir.add(name) & True
             self.save()
+        return ret
 
     def save(self):
         js=json.dumps(self.json())

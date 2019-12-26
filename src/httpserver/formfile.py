@@ -2,7 +2,7 @@
 from .socketwrapper import SocketWrapper
 from src import conf
 from os import  path
-
+from src.httpserver import log
 
 class FormFile:
 
@@ -65,7 +65,7 @@ class FormFile:
                     return False
                 elif bound == FormFile.SIMPLE_BOUND:
                     return True
-        print("Write : ", out)
+        log.debug("Writing file to '"+out+"'")
         with open(out, "wb") as f:
             x=self.soc.read(1)
             while True:

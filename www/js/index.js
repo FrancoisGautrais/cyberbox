@@ -3,6 +3,11 @@ function main(){
     $("#clicktrigger").on("click", function() {
         $("#file").trigger("click");
     });
+
+    $("#file").change(function (){
+        modal("loading")
+        sendfile()
+     });
 }
 
 
@@ -10,35 +15,26 @@ function sendfile()
 {
     var data = new FormData();
     data.append("file", $("#file").prop("files")[0])
-    divloading()
+    loading("Transfert du fichier, merci de patienter")
     $.ajax({
         type: 'POST',
         processData: false, // important
         contentType: false, // important
         data: data,
+        dataType: 'text',
         url: "/upload/"+$("#CONST_PATH").html(),
         // in PHP you can call and process file in the same way as if it was submitted from a form:
         // $_FILES['input_file_name']
         success: function(jsonData){
+            modalClose("loading")
             window.location.reload()
         },
         error : function(_a, _b, _c)
         {
-            cardform()
+            modalClose("loading")
+            error("Impossible d'envoyer le fichier", _a.responseText)
         }
     });
-}
-
-function divloading()
-{
-    $("#cardform").hide()
-    $("#divloading").show()
-}
-
-function cardform()
-{
-    $("#cardform").show()
-    $("#divloading").hide()
 }
 
 GB=1024*1024*1024
@@ -49,10 +45,6 @@ MIME={
 
 }
 
-function toggleOverlay()
-{
-    $(".onoverlay").toggle()
-}
 
 function min(x,y){ return x>y?x:y }
 
@@ -109,24 +101,23 @@ function autoreplace_menupath(path)
 
 
 
-function on_upload()
+function new_file()
 {
+    modalClose("add_file_dir")
     $("#file").click()
+
 }
-/*
-function handleReplace(el, type, value){
-    switch (type) {
-        case "size": return el.replaceWith(autoreplace_size(parseInt(value)))
-        case "mime": return el.replaceWith(autoreplace_mime(value))
-        case "boundtext": return autoreplace_boundtext(el, value)
-        case "menupath":
-            x=autoreplace_menupath(value)
-            for( i in x){
-            console.log(x[i])
-                $(el).parent().append(x[i])
-            }
-            //el.remove()
-            return
-    }
+
+function new_dir()
+{
+    modalClose("add_file_dir")
+   modal("add_dir")
+
 }
-*/
+
+
+
+function on_new()
+{
+   modal("add_file_dir")
+}

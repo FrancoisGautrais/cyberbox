@@ -114,7 +114,6 @@ class FileEntry(_Entry):
     def update(self):
         stat=os.stat(self.abspath)
         _Entry._update(self, stat)
-        m=mime(self.abspath)
         self.size=stat.st_size
         self.mime=mime(self.abspath)
 
@@ -164,8 +163,9 @@ class DirEntry(_Entry):
         os.rmdir(self.abspath)
 
     def add(self, name, force=False):
-        if not force and (name in self.children): raise Exception("Error child exists !")
+        if not force and (name in self.children): return False
         self.children[name]=new_from_fs(self.relpath, name)
+        return True
 
     def update(self):
         _Entry._update(self, os.stat(self.abspath))
@@ -186,7 +186,8 @@ class DirEntry(_Entry):
                 else: obj.update()
 
             #le fichier/dossier n'existe pas
-            else: self.add(name)
+            else:
+                self.add(name)
 
         #on vérifie que tous les fichiers de la base existent sur le disque
         for name in self.children:

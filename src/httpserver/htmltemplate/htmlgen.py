@@ -1,4 +1,4 @@
-from src.utils import html_template_string
+from ..utils import html_template_string
 from src.httpserver.htmltemplate.lexer import Lexer
 
 from .instructions_loader import call

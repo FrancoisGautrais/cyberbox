@@ -1,5 +1,6 @@
 from os import path
 
+from src.httpserver import log
 
 test = 23
 WWW_DIR = "www"
@@ -7,6 +8,7 @@ LISTEN_HOST = ""
 LISTEN_PORT = 8080
 SHARE_DIR = "share/"
 SAVE_DIR = "save/"
+LOG_LEVEL = 0
 PIDFILE="/var/cyberbox.pid"
 
 class Conf:
@@ -15,10 +17,12 @@ class Conf:
         pass
 
 if not Conf._INITIALIZED:
+    log.info("Reading config file '../conf/cyberbox.conf' ....")
     with open("../conf/cyberbox.conf") as f:
         exec(f.read())
     if SHARE_DIR[-1]!="/": SHARE_DIR+="/"
     if SAVE_DIR[-1]!="/": SAVE_DIR+="/"
+    log.info("\tConfig OK")
 
 SRC_ABS_PATH = path.dirname(path.abspath(__file__))
 BASE_ABS_PATH = path.normpath(path.join(SRC_ABS_PATH, ".."))

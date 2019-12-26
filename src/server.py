@@ -1,5 +1,6 @@
 import os
 
+from src.httpserver import log
 from src.user import User
 from .httpserver.restserver import HTTPRequest, HTTPResponse, HTTPServer
 from src import conf
@@ -30,9 +31,9 @@ class Server(HTTPServer):
     def handlerequest(self, req : HTTPRequest, res : HTTPResponse):
         client=self.find_client(req, res, False)
         if req.method=="GET":
-            if req.path in (Server.SHARE_URL[:-1], Server.SHARE_URL, "/"):
+            if req.path in (Server.SHARE_URL[:-1], Server.SHARE_URL):
                 return self.handle_download(req, res, client)
-            elif req.path.startswith(Server.BROWSE_URL[:-1]):
+            elif req.path.startswith(Server.BROWSE_URL) or req.path in (Server.BROWSE_URL[:-1], "/"):
                 return self.handle_browse(req,res, client)
             elif req.path == "/preferences.html":
                 res.serve_file_gen(conf.www("preferences.html"), client.json())
@@ -94,6 +95,7 @@ class Server(HTTPServer):
     def handle_download(self, req : HTTPRequest, res : HTTPResponse, client):
         relpath=req.path[len(Server.SHARE_URL):]
         abspath = conf.share(relpath)
+        log.info("File downloaded '"+relpath+"'")
 
         #si le fichier n'existe pas
         if not os.path.isfile(abspath):
@@ -107,9 +109,13 @@ class Server(HTTPServer):
         abspath=conf.SHARE_ABS_PATH
         if len(relapth): abspath+="/"+relapth
         x=req.multipart_next_file()
+        log.info("File uploaded '"+relapth+"/"+x.filename+"'")
         while x:
             x.save(abspath)
-            self.db.add(relapth, x.filename)
+            ret=self.db.add(relapth, x.filename)
+            if not ret:
+                res.code=403
+                res.end("Accès interdit, fichier existant")
             x=req.multipart_next_file()
 
     def handle_404(self, req : HTTPRequest, res : HTTPResponse):

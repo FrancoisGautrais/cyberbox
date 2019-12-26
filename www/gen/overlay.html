@@ -1,35 +1,46 @@
 <input type="file" id="file" name="file" class="hidden-button"/>
-<div id="overlay" class="overlay onoverlay" onclick="toggleOverlay()"></div>
 
-<div class="overlay-content onoverlay card light-grey darken-1 modal" id="upload">
+
+<div class="card darken-1 modal" id="add_file_dir">
     <div class="card-content">
-        <center><span class="card-title">Ajouter un fichier</span></center>
+        <center><span class="card-title" >Ajouter</span></center>
     </div>
-    <div class="card-action">
-        <div class="row" id="cardform">
-            <div class="input-field col s12">
-                <input disabled value="" id="filepathinput" type="text" class="validate">
-                <label for="filepathinput"></label>
+    <div class="card-action row">
+        <div class="card darken-1 col s5 fond-color-2 color-4" onclick="new_dir()">
+            <div class="card-content">
+                <center><span class="card-title" >Dossier</span></center>
             </div>
-            <a class="waves-effect waves-light btn" onclick="sendfile()">Envoyer</a>
+            <div class="card-action row">
+                <center><i class="material-icons card-icon-little">folder</i></center>
+            </div>
         </div>
-        <div id="divloading">
-            <center>
-                <div class="preloader-wrapper big active">
-                    <div class="spinner-layer spinner-blue-only">
-                        <div class="circle-clipper left">
-                            <div class="circle"></div>
-                        </div>
-                        <div class="gap-patch">
-                            <div class="circle"></div>
-                        </div>
-                        <div class="circle-clipper right">
-                            <div class="circle"></div>
-                        </div>
-                    </div>
-                </div>
-            </center>
+
+        <div class="card darken-1 col offset-s2 s5 fond-color-2 color-4" onclick="new_dir()">
+            <div class="card-content">
+                <center><span class="card-title" >Fichier</span></center>
+            </div>
+            <div class="card-action row">
+                <center><i class="material-icons card-icon-little">insert_drive_file</i></center>
+            </div>
         </div>
+
+    </div>
+</div>
+
+
+<div class="card darken-1 modal" id="add_dir">
+    <div class="card-content">
+        <center><span class="card-title" >Nouveau dossier</span></center>
+    </div>
+    <div class="card-action row">
+        <div class="col s12">
+            Nom du nouveau dossier:
+            <div class="input-field">
+                <input id="new_dir" type="text" class="validate">
+                <label for="new_dir">Nom</label>
+            </div>
+        </div>
+        <a class="btn fond-color-2 color-4 col offset-s3 s6">Créer</a>
     </div>
 </div>
 
