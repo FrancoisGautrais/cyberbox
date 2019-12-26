@@ -1,6 +1,8 @@
-from src import conf
+from src import conf, error
 import os
-from .httpserver.utils import mime
+
+from src.httpserver import log
+from src.httpserver.filecache import filecache
 
 def _attr(obj, key, default):
     return obj[key] if (key in obj) else default
@@ -31,14 +33,18 @@ class _Entry:
     F_CREATION="creation"
     F_NAME="name"
     F_TYPE="type"
-    F_HIDDEN="hidden"
+    #
+    # String h: hidden, r: can read, w: can write
+    #
+    F_ATTRS="attrs"
+
 
     def __init__(self, type, dir, js):
         self.dir=dir
         self.type=type if type else js[_Entry.F_NAME]
         self.creation=_attr(js, _Entry.F_CREATION, -1)
         self.name=_attr(js, _Entry.F_NAME, "")
-        self.hidden=_attr(js, _Entry.F_HIDDEN, True if len(self.name)>0 and self.name[0]=="." else False)
+        self.attrs=_attr(js, _Entry.F_ATTRS, "hrw" if len(self.name)>0 and self.name[0]=="." else "rw")
 
         self.reldir=self.dir
         self.relpath=os.path.join(self.reldir, self.name)
@@ -58,28 +64,40 @@ class _Entry:
             _Entry.F_NAME: self.name,
             _Entry.F_CREATION: self.creation,
             _Entry.F_TYPE: self.type,
-            _Entry.F_HIDDEN: self.hidden
+            _Entry.F_ATTRS: self.attrs,
         }
+
+    def can_read(self, isAdmin):
+        return "r" in self.attrs or isAdmin
+
+    def can_write(self, isAdmin):
+        return "w" in self.attrs or isAdmin
+
+    def is_hidden(self, isAdmin): return ("h" in self.attrs) and not isAdmin
 
     def moustache(self, recursive=False, showHdden=False):
         x=_Entry.json(self)
         x["dir"]=self.dir+("/" if len(self.dir)>0 else "")
         x["url_prefix"]="/browse/" if self.isdir() else "/share/"
+        x["path"] = os.path.join(self.dir, self.name) if len(self.dir)>0 else self.name
         x["is_dir"]=self.isdir()
-        x["hidden"]=self.hidden
+        x["attrs"]=self.attrs
         return x
 
-    def update(self):
+    def update(self, isAdmin):
         raise Exception("Must be implemented")
 
     def _update(self, stat):
         self.creation=stat.st_ctime
+        return error.ERR_OK
 
     def isdir(self):
         return self.type==_Entry.DIRECTORY
 
-    def modify(self, data):
-        if FileEntry.F_HIDDEN in data: self.hidden=data[FileEntry.F_HIDDEN]
+    def modify(self, data, isAdmin):
+        if not self.can_write(isAdmin): return error.ERR_FORBIDDEN
+        if FileEntry.F_ATTRS in data: self.attrs=data[FileEntry.F_ATTRS]
+        return error.ERR_OK
 
 class FileEntry(_Entry):
     F_SIZE="size"
@@ -91,7 +109,7 @@ class FileEntry(_Entry):
         self.size=_attr(js, FileEntry.F_SIZE, -1)
         self.mime=_attr(js, FileEntry.F_MIME, None)
         self.download=_attr(js, FileEntry.F_DOWNLOAD, 0)
-        if update: self.update()
+        if update: self.update(True)
 
     def json(self):
         ret=_Entry.json(self)
@@ -111,18 +129,27 @@ class FileEntry(_Entry):
         })
         return ret
 
-    def update(self):
+    def update(self, isAdmin):
+        if not self.can_write(isAdmin): return error.ERR_FORBIDDEN
         stat=os.stat(self.abspath)
         _Entry._update(self, stat)
         self.size=stat.st_size
-        self.mime=mime(self.abspath)
+        self.mime=filecache.mime(self.abspath)
+        return error.ERR_OK
 
-    def remove(self):
-        os.remove(self.abspath)
+    def remove(self, isAdmin):
+        if not self.can_write(isAdmin): return error.ERR_FORBIDDEN
+        try:
+            os.remove(self.abspath)
+            return error.ERR_OK
+        except:
+            return error.ERR_NOT_FOUND
 
-    def modify(self, data):
-        _Entry.modify(self, data)
+    def modify(self, data, isAdmin):
+        if not self.can_write(isAdmin): return error.ERR_FORBIDDEN
+        _Entry.modify(self, data, isAdmin)
         if FileEntry.F_DOWNLOAD in data: self.download=data[FileEntry.F_DOWNLOAD]
+        return error.ERR_OK
 
 class DirEntry(_Entry):
     F_CHILDREN="children"
@@ -132,7 +159,7 @@ class DirEntry(_Entry):
         self.children={}
         for child in _attr(js, DirEntry.F_CHILDREN, []):
             self.children[child[_Entry.F_NAME]]=new_from_js(self.relpath, child)
-        if update: self.update()
+        if update: self.update(True)
 
     def json(self):
         ret=_Entry.json(self)
@@ -142,8 +169,8 @@ class DirEntry(_Entry):
         ret[DirEntry.F_CHILDREN]=children
         return ret
 
-    def modify(self, data):
-        _Entry.modify(self, data)
+    def modify(self, data, isAdmin):
+        return _Entry.modify(self, data, isAdmin)
 
     def moustache(self, first=True, showHdden=False):
         if not first:
@@ -153,21 +180,24 @@ class DirEntry(_Entry):
         else:
             children=[]
             for child in self.children:
-                if not self.children[child].hidden or showHdden:
+                if (not self.children[child].is_hidden(showHdden)) :
                     children.append(self.children[child].moustache(False, showHdden))
             return children
 
-    def remove(self):
+    def remove(self, isAdmin):
+        if not self.can_write(isAdmin): return error.ERR_FORBIDDEN
         for f in self.children:
             f.remove()
         os.rmdir(self.abspath)
+        return error.ERR_OK
 
     def add(self, name, force=False):
         if not force and (name in self.children): return False
         self.children[name]=new_from_fs(self.relpath, name)
         return True
 
-    def update(self):
+    def update(self, isAdmin):
+        if not self.can_write(isAdmin): return error.ERR_FORBIDDEN
         _Entry._update(self, os.stat(self.abspath))
         children=os.listdir(self.abspath)
 
@@ -183,7 +213,7 @@ class DirEntry(_Entry):
                     self.add(name, force=True)
 
                 #si le type correspond
-                else: obj.update()
+                else: obj.update(isAdmin)
 
             #le fichier/dossier n'existe pas
             else:
@@ -193,4 +223,5 @@ class DirEntry(_Entry):
         for name in self.children:
             if not name in children:
                 del self.children[name]
+        if not self.can_write(isAdmin): return error.ERR_OK
 

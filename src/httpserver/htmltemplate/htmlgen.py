@@ -1,6 +1,8 @@
+from src.httpserver import log
+from src.httpserver.filecache import filecache
 from ..utils import html_template_string
 from src.httpserver.htmltemplate.lexer import Lexer
-
+import time
 from .instructions_loader import call
 
 
@@ -56,8 +58,9 @@ class Instruction:
 
 class HtmlGen:
 
-    def __init__(self, filename, isFile=True):
-        self.fd=open(filename, "r")
+    def __init__(self, filename=None, isFile=True, fd=None):
+        self.filename=filename
+        self.fd=filecache.open(filename, "r") if filename else fd
         self.text=""
         self.c=""
 
@@ -99,6 +102,15 @@ class HtmlGen:
 
 
 def html_gen(filename, data):
-    x = HtmlGen(filename)
+    t=time.time()
+    x = HtmlGen(filename=filename)
+    content=x.gen(data)
+    out = html_template_string(content,data)
+    t= "%.3f us" % ((time.time()-t)/1000000)
+    log.info("html_gen('"+filename+"') : ", t)
+    return out
+
+def html_gen_fd(fd, data):
+    x = HtmlGen(fd=fd)
     content=x.gen(data)
     return html_template_string(content,data)

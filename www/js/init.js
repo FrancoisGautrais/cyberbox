@@ -21,6 +21,30 @@ function modalClose(s, fct=null, args=null)
     }
 }
 
+function _confirmClose(after)
+{
+    modalClose("confirm")
+
+}
+
+function confirm(title, text, onYes, onNo=null)
+{
+    $("#confirm-title").html(title)
+    $("#confirm-text").html(text)
+    $("#confirm-no").off("click")
+    $("#confirm-no").on("click", function(){
+        modalClose("confirm")
+        if(onNo) onNo()
+     })
+
+    $("#confirm-yes").off("click")
+    $("#confirm-yes").on("click", function(){
+        modalClose("confirm")
+        if(onYes) onYes()
+     })
+     modal("confirm")
+}
+
 function loading(text)
 {
     $("#loading-text").html(text)

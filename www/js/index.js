@@ -1,3 +1,7 @@
+
+current_edit_name=""
+current_path=""
+
 function main(){
     autoreplaceall()
     $("#clicktrigger").on("click", function() {
@@ -8,6 +12,100 @@ function main(){
         modal("loading")
         sendfile()
      });
+
+     current_path=$("#CONST_PATH").html()
+}
+
+function confirm_modify(){
+    x=$("#edit_can_read").is(":checked")?"r":""
+    x+=$("#edit_can_write").is(":checked")?"w":""
+    x+=$("#edit_can_exec").is(":checked")?"x":""
+    x+=$("#edit_is_hidden").is(":checked")?"h":""
+    data={
+        "attrs" : x
+    }
+    modal("loading")
+    $.ajax({
+            type: 'POST',
+            processData: false, // important
+            contentType: false, // important
+            url: "/file/"+current_path+current_edit_name,
+            data: JSON.stringify(data),
+            headers : {
+                "Content-Type": "application/json"
+            },
+            success: function(jsonData){
+                modalClose("loading")
+                modalClose("edit_file")
+                window.location.reload()
+            },
+            error : function(_a, _b, _c)
+            {
+                modalClose("loading")
+                error("Impossible de modifier '"+current_edit_name+"'", _a.responseText)
+            }
+     });
+
+
+}
+
+function confirm_delete()
+{
+    confirm("Êtes-vous sûr ?", "Voulez vous vraiment supprimer '"+current_edit_name+"'", function(){
+            modal("loading")
+            $.ajax({
+                type: 'GET',
+                processData: false, // important
+                contentType: false, // important
+                url: "/delete/"+current_path+"/"+current_edit_name,
+
+                success: function(jsonData){
+                    modalClose("loading")
+                    modalClose("edit_file")
+                    window.location.reload()
+                },
+                error : function(_a, _b, _c)
+                {
+                    modalClose("loading")
+                    error("Impossible de supprimer '"+current_edit_name+"'", _a.responseText)
+                }
+            });
+        })
+}
+
+function _edit_file(name, data)
+{
+    modalClose("loading")
+    modal("edit_file")
+    $("#edit_name").val(data["name"])
+    $("#edit_can_read").prop('checked', data["attrs"].search("r")>=0);
+    $("#edit_can_write").prop('checked', data["attrs"].search("w")>=0);
+    $("#edit_can_exec").prop('checked', data["attrs"].search("x")>=0);
+    $("#edit_is_hidden").prop('checked', data["attrs"].search("h")>=0);
+    M.updateTextFields();
+}
+
+function edit_file(name)
+{
+    current_edit_name=name
+    loading("Chargement")
+    $.ajax({
+        type: 'GET',
+        processData: false, // important
+        contentType: false, // important
+        dataType: 'json',
+        url: "/file"+$("#CONST_PATH").html()+"/"+name,
+
+        success: function(jsonData){
+            modalClose("loading")
+            _edit_file(name, jsonData)
+        },
+        error : function(_a, _b, _c)
+        {
+            modalClose("loading")
+            error("Impossible de récupérer les données", _a.responseText)
+        }
+    });
 }
 
 

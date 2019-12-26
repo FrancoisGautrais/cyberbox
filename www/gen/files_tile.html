@@ -11,6 +11,7 @@
     </div>
 {{/is_root}}
 
+{{#can_read}}
 <div class="col s4 m3 l2">
     <div class="card">
         <a onclick="on_new()"><center><i class="tile-icon material-icons color-1">add</i></center></a>
@@ -21,6 +22,7 @@
         </div>
     </div>
 </div>
+{{/can_read}}
 
 {{#ls}}
     <div class="col s4 m3 l2">
@@ -36,8 +38,15 @@
             <div class="custom-card-action card-action ">
                 <span class="color-5">
                     <center class="tile-filename"><div class="autoreplace" data-type="boundtext" data-value="{{name}}"></div></center>
-                    <center class="tile-filename">{{^is_dir}}<div class="autoreplace" data-type="size" data-value="{{size}}"></div>{{/is_dir}}
-                    {{#is_dir}}<div>{{length}} éléments</div>{{/is_dir}}</center>
+                    <div class="second-line">
+                        <div class="tile-filename left valign-wrapper">{{^is_dir}}
+                            <div class="autoreplace" data-type="size" data-value="{{size}}"></div>{{/is_dir}}
+                            {{#is_dir}}<div>{{length}} éléments</div>{{/is_dir}}
+                        </div>
+                        <div class="right" onclick="edit_file('{{name}}')">
+                                <i class="medium material-icons color-2">create</i>
+                        </div>
+                    </div>
                 </span>
             </div>
         </div>
@@ -50,6 +59,10 @@
     padding-bottom: 5px ! important;
     padding-left: 5px ! important;
     padding-right: 5px ! important;
+}
+
+.second-line {
+    display: flow-root;
 }
 
 .tile-icon {

@@ -39,6 +39,7 @@
         </li>
     </ul>
 {{/is_root}}
+{{#can_read}}
 <ul class="collection">
     <li class="collection-item custom-list" onclick="on_new()">
         <span class="custom-list-item-icon">
@@ -49,6 +50,7 @@
         </span>
     </li>
 </ul>
+{{/can_read}}
 {{#ls}}
     <ul class="collection">
         <li class="collection-item custom-list" onclick="window.location.href='{{url_prefix}}{{dir}}{{name}}'">

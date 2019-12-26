@@ -13,33 +13,33 @@
 
 <body>
     <#include("../www/gen/header.html")>
-    <div class="const" id="CONST_PATH">{{path}}</div>
-    <#include("../www/gen/overlay.html")>
-    <div class="hide">
-        <div id="DISPLAY">{{display}}</div>
-    </div>
-    <main>
-        <div class="container">
-            <div class="row">
-                <div class="input-field col offset-s3 s6" >
-                    <select id="select_display">
-                        <option value="tile">Affichage tuile</option>
-                        <option value="list">Affichage liste</option>
-                    </select>
-                    <label>Mode d'affichage</label>
+    {{#user}}
+        <div class="const" id="CONST_PATH">{{path}}</div>
+        <div class="hide">
+            <div id="DISPLAY">{{display}}</div>
+        </div>
+        <main>
+            <div class="container">
+                <div class="row">
+                    <div class="input-field col offset-s3 s6" >
+                        <select id="select_display">
+                            <option value="tile">Affichage tuile</option>
+                            <option value="list">Affichage liste</option>
+                        </select>
+                        <label>Mode d'affichage</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col offset-s3 s3">Effacer les données</div>
+                    <a class="waves-effect waves-light btn fond-rouge col s3" onclick="on_erease()">Effacer</a>
+                </div>
+                <div class="row">
+                    <div class="col offset-s3 s3">Enregistrer les données</div>
+                    <a class="waves-effect waves-light btn fond-vert col s3" onclick="on_save()">Enregistrer</a>
                 </div>
             </div>
-            <div class="row">
-                <div class="col offset-s3 s3">Effacer les données</div>
-                <a class="waves-effect waves-light btn fond-rouge col s3" onclick="on_erease()">Effacer</a>
-            </div>
-            <div class="row">
-                <div class="col offset-s3 s3">Enregistrer les données</div>
-                <a class="waves-effect waves-light btn fond-vert col s3" onclick="on_save()">Enregistrer</a>
-            </div>
-        </div>
-    </main>
-
+        </main>
+    {{/user}}
     <#include("../www/gen/footer.html")>
     <script type="text/javascript" src="/js/jquery.min.js"></script>
     <script type="text/javascript" src="/js/materialize.min.js"></script>

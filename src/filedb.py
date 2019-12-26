@@ -1,11 +1,14 @@
 import json
-from .httpserver.utils import mime
 import os
 from src import conf
 from .fileentry import new_from_fs, DirEntry
 import json
 
+from src import error
+
 class FileDB:
+
+
     def __init__(self, load=None):
         if not load:
             self.db=DirEntry("",{}, True)
@@ -37,37 +40,53 @@ class FileDB:
         else:
             return False
 
-    def modify(self, path, data):
+    def modify(self, path, data, isAdmin):
         obj=self.find(path)
-        obj.modify(data)
+        x=obj.modify(data, isAdmin)
+        self.save()
+        return x
 
-    def remove(self, path):
+    def remove(self, path, isAdmin):
         if path[-1]=="/": path=path[:-1]
         path=path.split("/")
         parent=self.find('/'.join(path[:-1]))
         name=path[-1]
 
-        parent = self.find(parent)
         obj = parent.children[name]
         if obj:
-            obj.remove()
+            x=obj.remove(isAdmin)
             del parent.children[name]
             self.save()
-            return True
-        return False
+            return x
+        return error.ERR_NOT_FOUND
 
     def add(self, dir, name):
         objdir=self.find(dir)
         ret=True
         if objdir and objdir.isdir():
-            ret=objdir.add(name) & True
+            r=objdir.add(name)
+            if not r: return r
             self.save()
-        return ret
+        return error.ERR_OK
+
+    def mkdir(self, path, isAdmin, attr):
+        pathl=path.split("/")
+        dir=pathl[:-1]
+        name=pathl[-1]
+        os.mkdir(path)
+        x=self.add(dir, name)
+        if attr:
+            obj=self.find(path)
+            return obj.modify(attr, isAdmin)
+        return x
+
+
 
     def save(self):
         js=json.dumps(self.json())
         with open(conf.save("save.json"), "w") as f:
             f.write(js)
+            return error.ERR_OK
 
     @staticmethod
     def new_from_fs():

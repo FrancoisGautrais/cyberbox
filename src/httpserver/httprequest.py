@@ -1,7 +1,9 @@
 import json
 import io
 import os
-from .utils import mime
+
+from src.httpserver.filecache import filecache
+
 from .socketwrapper import SocketWrapper
 from .formfile import FormFile
 from src.httpserver.htmltemplate.htmlgen import html_gen
@@ -218,11 +220,11 @@ class HTTPRequest(_HTTP):
         self.version=head[2]
 
 
-        self.path=self.url
+        self.path=unquote(self.url)
         n=self.url.find("?")
 
         if n>=0:
-            self.path=self.url[:n]
+            self.path=unquote(self.url[:n])
             tmp=self.url[n+1:]
             self.query=parse_urlencoded_params(tmp)
             self.filename=os.path.basename(self.path)
@@ -255,10 +257,13 @@ class HTTPResponse(_HTTP):
             self._body_type=BODY_EMPTY
 
     def serve_file_gen(self, path : str, data):
-        self.content_type(mime(path))
+        m=filecache.mime(path)
+        self.content_type(m)
         self.header("Content-Length", str(os.stat(path).st_size))
-        self.header("Content-Type", mime(path))
-        self.end(html_gen(path, data))
+        if m!="application/octet-stream":
+            self.end(html_gen(path, data))
+        else:
+            self.serve_file(path)
 
 
     def serve_file(self, path : str, urlReq=None, forceDownload=False, data={}):
@@ -267,7 +272,7 @@ class HTTPResponse(_HTTP):
 
         fd=None
         try:
-            fd=open(path, "rb")
+            fd=filecache.open(path, "rb")
         except Exception as err:
             self.code = HTTP_NOT_FOUND
             self.msg = STR_HTTP_ERROR[HTTP_NOT_FOUND]
@@ -279,14 +284,13 @@ class HTTPResponse(_HTTP):
             return
 
         #self._isStreaming=True
-        self.content_type(mime(path))
+        self.content_type(filecache.mime(path))
         self.header("Content-Length", str(os.stat(path).st_size))
-        self.header("Content-Type", mime(path))
 
         if forceDownload:
             self.header("Content-Disposition", "attachment; filename=\""+\
                     os.path.basename(path)+"\"")
-        with open(path, "rb") as f:
+        with filecache.open(path, "rb") as f:
             self.end(f.read())
         #self.end(open(path, "rb"))
 

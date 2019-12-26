@@ -14,6 +14,7 @@ class User:
         self.admin=False
         self.display="list"
         self.validity=time.time()+User.DUREE_SESSION
+        self.name=None
         if js:
             self._update(js)
         else:
@@ -21,6 +22,7 @@ class User:
 
     def _update(self, js):
         self.id=js["id"] if "id" in js else self.id
+        self.name=js["name"] if "name" in js else self.name
         self.actions=js["actions"] if "actions" in js else self.actions
         self.infos=js["infos"] if "infos" in js else self.infos
         self.validity=js["validity"] if "validity" in js else self.validity
@@ -32,6 +34,9 @@ class User:
 
     def set_infos(self, infos):
         self.infos=infos
+
+    def set_name(self, name):
+        self.name=name
 
     def inc_actions(self):
         self.actions+=1
@@ -45,6 +50,7 @@ class User:
     def json(self):
         return {
             "id" : self.id,
+            "name" : self.name,
             "actions" : self.actions,
             "infos" : self.infos,
             "validity": self.validity,
@@ -57,7 +63,8 @@ class User:
         return User(js)
 
     @staticmethod
-    def from_info(info):
+    def from_info(info, name=None):
         x=User()
         x.set_infos(info)
+        x.set_name(name)
         return x

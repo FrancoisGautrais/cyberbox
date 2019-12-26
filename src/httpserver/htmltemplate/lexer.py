@@ -38,8 +38,9 @@ class Lexer:
         return self.c in x
 
     def _read_str(self):
+        end=self.c
         self.read()
-        while self.c!="\"" and self.c!="":
+        while self.c!=end and self.c!="":
             self.string+=self.c
             self.read()
         self.read()
@@ -84,6 +85,7 @@ class Lexer:
         if self.cis(Lexer.IDENT_FIRST):  self._read_ident()
         elif self.cis(Lexer.NUMBERS_FIRST):  self._read_numbers()
         elif self.c=="\"": self._read_str()
+        elif self.c=="\'": self._read_str()
         elif self.c==")": self._set_special(Lexer.P_FERMANTE, self.c)
         elif self.c=="(": self._set_special(Lexer.P_OUVRANTE, self.c)
         elif self.c==",": self._set_special(Lexer.VIRGULE, self.c)

@@ -4,6 +4,7 @@ import sys
 import os
 import signal
 from src.httpserver import log
+from src.httpserver.filecache import filecache
 
 
 def do_pidfile():
@@ -24,6 +25,7 @@ def get_server_pid():
         return int(f.read())
 
 def start_server():
+    filecache.init()
     do_pidfile()
     serv = Server()
     serv.listen(conf.LISTEN_PORT)

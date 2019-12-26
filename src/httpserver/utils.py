@@ -1,23 +1,11 @@
 
 import pystache
-import magic
 from threading import Lock
 from threading import Thread
-_mime_lock=None
+import hashlib
 
-if not _mime_lock:
-    _mime_lock=Lock()
 
-def mime(path):
-    try:
-        _mime_lock.acquire()
-        x=magic.detect_from_filename(path)
-        mi= x.mime_type
-        _mime_lock.release()
-        return mi
-    except:
-        _mime_lock.release()
-        return "text/plain"
+
 
 class Callback:
 
@@ -70,8 +58,13 @@ def start_thread(cb : Callback):
 
 
 def html_template(path, data):
-    with open(path) as file:
+    with filecache.open(path) as file:
         return pystache.render(file.read(), data)
 
 def html_template_string(source, data):
     return pystache.render(source, data)
+
+def sha256(s):
+    m=hashlib.sha256()
+    m.update(bytes(s, "utf-8"))
+    return m.digest()
