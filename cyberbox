@@ -6,5 +6,46 @@ else
 	export PYTHONPATH=$PYTHONPATH:$DIR
 fi
 
-cd $DIR/src
-python3 main.py >  ../log/cyberbox.log 2>&1
+
+start_server() {
+    cd $DIR/src
+    python3 main.py
+}
+
+update_source() {
+    git fetch --all
+    git reset --hard origin/master
+    git pull origin master
+}
+
+kill_server() {
+    cd $DIR/src
+    python3 main.py stop
+}
+
+restart_server() {
+    cd $DIR/src
+    python3 main.py stop
+    python3 main.py
+}
+
+if [ $# -ge 1 ];
+then
+    if [ "$1" == "start" ]; then
+        start_server
+    fi
+    if [ "$1" == "stop" ]; then
+        kill_server
+    fi
+    if [ "$1" == "update" ]; then
+        update_source
+    fi
+    if [ "$1" == "restart" ]; then
+        restart_server
+    fi
+
+else
+    start_server
+fi
+
+
