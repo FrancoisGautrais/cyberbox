@@ -4,6 +4,7 @@ from io import StringIO
 from io import BytesIO
 import magic
 
+from src import conf
 from src.httpserver import log
 from src.httpserver import utils
 
@@ -18,6 +19,7 @@ def _mime(path):
     try:
         _mime_lock.acquire()
         x=magic.detect_from_filename(path)
+        log.info(path, ":", x)
         mi= x.mime_type
         _mime_lock.release()
         return mi
@@ -40,7 +42,14 @@ class CacheEntry:
 
 
     def _update(self):
-        self.mime=_mime(self.path)
+        if self.path.endswith(".html"):
+            self.mime="text/html"
+        elif self.path.endswith(".css"):
+            self.mime="text/css"
+        elif self.path.endswith(".js"):
+            self.mime="application/javascript"
+        else:
+            self.mime=_mime(self.path)
         self.size=os.stat(self.path).st_size
         if self.size<=MAX_FILE_SIZE:
             for x in FILETYPES:
@@ -79,7 +88,7 @@ class FileCache:
     def __init__(self, dirs=[]):
         self.db={}
         self.preload(dirs)
-        self.bypass=False
+        self.bypass=conf.USE_CACHE
 
 
     def find_total_size(self):
@@ -112,10 +121,9 @@ class FileCache:
         return self._get_cached(path, True)
 
     def mime(self, path, invalidate=False):
-        return self._get_cached(path, invalidate).mime if not self.bypass else utils.mime(path)
+        return self._get_cached(path, invalidate).mime if not self.bypass else _mime(path)
 
     def open(self, path, mode="r", invalidate=False):
-        log.info("Total cache %.3f Mio"%(self.find_total_size()/1024/1024))
         return self._get_cached(path, invalidate).open(mode) if not self.bypass else open(path, mode)
 
 class filecache:

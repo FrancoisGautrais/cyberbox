@@ -4,7 +4,7 @@ from threading import Lock
 from threading import Thread
 import hashlib
 
-
+from src.httpserver import filecache
 
 
 class Callback:
@@ -18,7 +18,7 @@ class Callback:
     def call(self, prependParams=(), appendParams=()):
         data=None
         if not self.fct: return None
-        if self.data:
+        if self.data!=None:
             data=prependParams+(self.data,)+appendParams
 
         if self.obj:

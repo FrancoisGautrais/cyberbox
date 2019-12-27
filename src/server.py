@@ -8,6 +8,9 @@ from .filedb import FileDB
 from src.httpserver.htmltemplate.htmlgen import html_gen
 from src.usersdb import UserDB
 
+
+CACHED_FILES=[ "/js/jquery.min.js", "/js/materialize.min.js", "/js/sha256.js", "/css/materialize.css" ]
+
 class Server(HTTPServer):
     NEW_DIR = "/createdir/"
     UPLOAD_URL="/upload/"
@@ -108,10 +111,16 @@ class Server(HTTPServer):
         path = conf.www(req.path[1:])
         if not os.path.isfile(path):
             return self.handle_404(req,res)
-        if req.path.startswith("/conf/") or len(req.path.split())==2:
+        if req.path.startswith("/gen/") or len(req.path.split())==2:
             res.serve_file_gen(path, { "user" : client.json() })
         else:
-            res.serve_file(path)
+            res.header("Last-Modified", "Wed, 21 Oct 2015 07:28:00 GMT")
+            res.header("age", "30")
+            if req.header("If-Modified-Since"):
+                res.code=304
+                res.msg="Not Modified"
+            else:
+                res.serve_file(path)
 
     def handle_browse(self, req : HTTPRequest, res : HTTPResponse, client):
         relpath=req.path[len(Server.BROWSE_URL):]

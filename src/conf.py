@@ -1,6 +1,17 @@
 from os import path
 
 from src.httpserver import log
+from src.httpserver.httpserver import HTTPServer
+
+def SERVER_SINGLE_THREAD():
+    return HTTPServer.SINGLE_THREAD
+
+def SERVER_SPAWN_THREAD():
+    return HTTPServer.SPAWN_THREAD
+
+def SERVER_CONST_THREAD(n):
+    return { "mode" : HTTPServer.CONST_THREAD, "n_threads" : n}
+
 
 test = 23
 WWW_DIR = "www"
@@ -10,6 +21,8 @@ SHARE_DIR = "share/"
 SAVE_DIR = "save/"
 LOG_LEVEL = 0
 PIDFILE="/var/cyberbox.pid"
+SERVER=SERVER_CONST_THREAD(4)
+USE_CACHE=True
 
 class Conf:
     _INITIALIZED=False

@@ -28,7 +28,9 @@ class Log:
         if lvl>=self.lvl: self.fd.write(_time_str()+"|"+Log.LEVEL_STR[lvl]+"| "+s+"\n")
 
     def log(self, level, *args):
-       line=" ".join(args)
+       arg=[ ]
+       for x in args: arg.append(str(x))
+       line=" ".join(arg)
        lines=line.split("\n")
        for l in lines:
            self._log(level, l)

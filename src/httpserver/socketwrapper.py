@@ -2,8 +2,12 @@ import socket
 from threading import Thread
 #content=open("request", "rb").read()
 
-
+import traceback
 import time
+
+from src.httpserver import log
+
+
 class SocketWrapper:
     def __init__(self, llsocket):
         self._socket=llsocket
@@ -28,7 +32,7 @@ class SocketWrapper:
             while bytes_recd < l:
                 chunk = self._socket.recv(min(l - bytes_recd, 2048))
                 if chunk == b'':
-                    raise RuntimeError("socket connection broken")
+                    raise Exception("socket connection broken, bytes left : "+str(bytes_recd-l))
                 base+=chunk
                 bytes_recd = bytes_recd + len(chunk)
         return bytes(base)

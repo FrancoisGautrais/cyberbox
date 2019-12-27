@@ -1,7 +1,11 @@
 import json
 import io
+import sys
+import traceback
 import os
+import time
 
+from src.httpserver import log
 from src.httpserver.filecache import filecache
 
 from .socketwrapper import SocketWrapper
@@ -117,6 +121,9 @@ class HTTPRequest(_HTTP):
     def __init__(self, socket, parse_headline=True):
         _HTTP.__init__(self)
         self.method=None
+        self.start_time=time.time()
+        self.total_time=-1
+        self.stop_time=-1
         self.version=""
         self.url="/"
         self.path="/"
@@ -138,6 +145,8 @@ class HTTPRequest(_HTTP):
             return self._headers[key]
         return None
 
+    def get_total_time(self):
+        return self.total_time
 
     def parse(self):
         self._parse_head()
@@ -330,11 +339,17 @@ class HTTPResponse(_HTTP):
         else: out=bytes()
 
         self.header("Content-Length", len(out))
-        soc.send(fromutf8(self.version + " " + str(self.code) + " " + self.msg + "\r\n"))
-        for k in self._headers:
-            soc.send(fromutf8(k + ": " + str(self._headers[k]) + "\r\n"))
-        soc.send(fromutf8("\r\n"))
+        try:
+            soc.send(fromutf8(self.version + " " + str(self.code) + " " + self.msg + "\r\n"))
+            for k in self._headers:
+                soc.send(fromutf8(k + ": " + str(self._headers[k]) + "\r\n"))
+            soc.send(fromutf8("\r\n"))
 
-        soc.send(out)
+            soc.send(out)
+        except Exception as err:
+            log.error(traceback.format_tb(limit=100))
+            log.error(traceback.format_exc(limit=100))
+
+
 
 
