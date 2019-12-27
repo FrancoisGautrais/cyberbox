@@ -20,9 +20,11 @@ def do_pidfile():
 
 def get_server_pid():
     out=-1
-
-    with open(conf.PIDFILE, "r") as f:
-        return int(f.read())
+    try:
+        with open(conf.PIDFILE, "r") as f:
+            return int(f.read())
+    except:
+        return -1
 
 def start_server():
     filecache.init()
@@ -37,6 +39,7 @@ def print_help():
     print("\t\t-p | --p PORT")
     print("\t\t-h | --help : this help")
 
+log.info(*sys.argv)
 def start():
     i=1
     done=False
@@ -51,7 +54,8 @@ def start():
             i+=1
             done=True
         elif arg in ["stop"]:
-            os.kill(get_server_pid(), signal.SIGKILL)
+            pid=get_server_pid()
+            if pid>0: os.kill(pid, signal.SIGKILL)
             done=True
         elif arg in ["start"]:
             start_server()
