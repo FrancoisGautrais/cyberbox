@@ -26,7 +26,7 @@ kill_server() {
 restart_server() {
     cd $DIR/src
     python3 main.py stop
-    python3 main.py
+    python3 main.py &
 }
 
 if [ $# -ge 1 ];
