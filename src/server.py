@@ -11,6 +11,23 @@ from src.usersdb import UserDB
 
 CACHED_FILES=[ "/js/jquery.min.js", "/js/materialize.min.js", "/js/sha256.js", "/css/materialize.css" ]
 
+
+def _size_compare(x, y): return (x["size"] if "size" in x else 0) - (y["size"] if "size" in y else 0)
+def _date_compare(x, y): return x["creation"]-y["creation"]
+def _name_compare(x, y): return x["name"].lower()-y["name"].lower()
+
+def _size_key(x): return (x["size"] if "size" in x else 0)
+def _date_key(x): return x["date"]
+def _name_key(x): return x["name"].lower()
+
+def _sort(array, _field, _order):
+    algo=_size_key
+    if _field=="date": algo=_date_key
+    if _field=="name": algo=_name_key
+    reverse=_order=="dec"
+    return sorted(array, key=algo, reverse=reverse)
+
+
 class Server(HTTPServer):
     NEW_DIR = "/createdir/"
     UPLOAD_URL="/upload/"
@@ -116,7 +133,7 @@ class Server(HTTPServer):
         else:
             res.header("Last-Modified", "Wed, 21 Oct 2015 07:28:00 GMT")
             res.header("age", "30")
-            if req.header("If-Modified-Since"):
+            if req.header("If-Modified-Since") and conf.USE_BROWSER_CACHE:
                 res.code=304
                 res.msg="Not Modified"
             else:
@@ -129,6 +146,8 @@ class Server(HTTPServer):
             res.content_type("text/html")
             file=self.db.find(relpath)
             x=self.db.moustache(relpath, client.is_admin())
+            x=_sort(x, client.sort, client.order)
+
             res.end(html_gen(conf.www("browse.html"),{
                 "path" : relpath,
                 "ls" : x,

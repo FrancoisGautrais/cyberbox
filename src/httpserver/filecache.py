@@ -88,7 +88,7 @@ class FileCache:
     def __init__(self, dirs=[]):
         self.db={}
         self.preload(dirs)
-        self.bypass=conf.USE_CACHE
+        self.bypass=not conf.USE_CACHE
 
 
     def find_total_size(self):

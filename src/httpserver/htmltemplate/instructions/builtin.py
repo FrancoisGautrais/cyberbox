@@ -1,6 +1,7 @@
 from src.httpserver.filecache import filecache
 from ..htmlgen import html_gen_fd
 import  copy
+import json
 def inst_include(args, data):
     x=copy.deepcopy(data)
     with filecache.open(args[0]) as f:
@@ -53,3 +54,21 @@ def inst_inf(args, data): return not args[0] < args[1]
 def inst_infeq(args, data): return not args[0] <= args[1]
 def inst_sup(args, data): return not args[0] > args[1]
 def inst_supeq(args, data): return not args[0] >= args[1]
+
+
+def inst_mobile(args, data):
+    x = data["user"]["mobile"]
+    if x:
+        return args[0]
+    elif len(args) > 1:
+        return args[1]
+
+def inst_desktop(args, data):
+    x = not data["user"]["mobile"]
+    if x:
+        return args[0]
+    elif len(args) > 1:
+        return args[1]
+
+def inst_json(args, data):
+    return json.dumps(args[0])

@@ -31,7 +31,7 @@
     <ul class="collection">
         <li class="collection-item custom-list" onclick="window.location.href='/browse/{{parent}}'">
             <span class="custom-list-item-icon">
-                <i class="material-icons card-icon-little">keyboard_backspace</i>
+                <i class="material-icons card-icon-little color-1">keyboard_backspace</i>
             </span>
             <span style="position: absolute; margin-top: 30px; margin-left: 10px;">
                 <span class="list-filename">Retour</span>
@@ -43,7 +43,7 @@
 <ul class="collection">
     <li class="collection-item custom-list" onclick="on_new()">
         <span class="custom-list-item-icon">
-            <i class="material-icons card-icon-little">add</i>
+            <i class="material-icons card-icon-little color-1">add</i>
         </span>
         <span style="position: absolute; margin-top: 30px; margin-left: 10px;">
             <span class="list-filename">Ajouter un fichier</span>
@@ -51,20 +51,21 @@
     </li>
 </ul>
 {{/can_read}}
+
+
 {{#ls}}
-    <ul class="collection">
+    <ul class="collection sortable" data-name="{{name}}" data-size="{{size}}" data-date="{{creation}}">
         <li class="collection-item custom-list" onclick="window.location.href='{{url_prefix}}{{dir}}{{name}}'">
             <a href="{{url_prefix}}{{dir}}{{name}}" class="list-link">
                 <span class="custom-list-item-icon">
-                    <i class="material-icons card-icon-little">
+                    <i class="material-icons card-icon-little color-3">
                         {{#is_dir}}folder{{/is_dir}}
                         {{^is_dir}}<div class="autoreplace" data-type="mime" data-value="{{mime}}"></div>{{/is_dir}}
                     </i>
                 </span>
                 <span class="custom-list-item">
                     <span class="list-filename">{{name}}</span>
-                    <p>{{^is_dir}}<div class="autoreplace" data-type="size" data-value="{{size}}"></div>|{{/is_dir}}
-                        {{#is_dir}}{{length}} éléments     |{{/is_dir}}</p>
+                    <p>{{^is_dir}}<div class="autoreplace" data-type="size" data-value="{{size}}"></div>|{{/is_dir}}</p>
                 </span>
             </a>
         </li>

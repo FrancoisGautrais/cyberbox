@@ -178,6 +178,8 @@ class HTTPRequest(_HTTP):
             self._set_header(key, val)
             line=self._socket.readline()[:-1]
 
+
+
     def _parse_body(self):
         l=self.content_length()
         if not l:

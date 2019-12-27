@@ -13,6 +13,8 @@ class User:
         self.actions=0
         self.admin=False
         self.display="list"
+        self.sort="name"
+        self.order="inc"
         self.validity=time.time()+User.DUREE_SESSION
         self.name=None
         if js:
@@ -28,6 +30,8 @@ class User:
         self.validity=js["validity"] if "validity" in js else self.validity
         self.admin=js["admin"] if "admin" in js else self.admin
         self.display=js["display"] if "display" in js else self.display
+        self.sort=js["sort"] if "sort" in js else self.sort
+        self.order=js["order"] if "order" in js else self.order
 
     def is_admin(self):
         return self.admin
@@ -55,7 +59,10 @@ class User:
             "infos" : self.infos,
             "validity": self.validity,
             "display": self.display,
-            "admin": self.admin
+            "order": self.order,
+            "sort": self.sort,
+            "admin": self.admin,
+            "mobile" : "Mobi" in self.infos
         }
 
     @staticmethod

@@ -20,14 +20,36 @@
 
 }
 
+.sidenav {
+
+}
+
+.nav-text {
+    font-size: 32px ! important;
+    height: 64px ! important;
+}
+
+.header > .right {
+    position: absolute;
+    top: 2px;
+    right: 5px;
+}
+
+.header > .left {
+    position: absolute;
+    top: 2px;
+    left: 5px;
+}
+
 </style>
 
 
-<div class="row header fond-color-1">
-    <span data-target="slide-out" class="sidenav-trigger col s5 color-4"><i class="material-icons menu-icon">menu</i></span>
-    <span class="col s4"><a href="/" class="title color-4">Cyber Box </a></span>
-    <span class="right"><a href="/aide.html"><i class="color-4 material-icons menu-icon right-align">help</i></a></span>
-    <span class="right"><a href="/preferences.html"><i class="color-4 material-icons menu-icon right-align">build</i></a></span>
+<div class="header fond-color-1">
+    <span data-target="slide-out" class="sidenav-trigger left color-4"><i class="material-icons menu-icon">menu</i></span>
+    <center><a href="/" class="title color-4">Cyber Box </a></center>
+    <!--<span class="right">
+        <a href="/aide.html"><i class="color-4 material-icons menu-icon">help</i></a>
+    </span>-->
 
 </div>
 
@@ -105,3 +127,8 @@
         </center>
     </div>
 </div>
+
+
+<script>
+data=<#json(get())>
+</script>

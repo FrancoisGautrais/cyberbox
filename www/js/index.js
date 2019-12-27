@@ -2,6 +2,35 @@
 current_edit_name=""
 current_path=""
 
+_sort_field=null
+_sort_order=null
+function _cmp(a,b)
+{
+    a=a.attributes["data-"+_sort_field].value
+    b=b.attributes["data-"+_sort_field].value
+    if(_sort_field!="name"){
+        a=parseFloat(a)
+        b=parseFloat(b)
+        console.log(a+" "+b)
+        return (_sort_order=="dec")?(a<b):(a>b)
+    }
+    return (_sort_order=="dec")?(a.toLowerCase()<b.toLowerCase()):(a.toLowerCase()>b.toLowerCase())
+}
+
+function sort(field, order) {
+    data.user.sort=_sort_field=field
+    data.user.order=_sort_order=order
+    list=[]
+    llist=$(".sortable").each(function(a,b){list.push(b)})
+    root=llist.parent()
+    llist.remove()
+    list.sort(_cmp)
+    for(var i in list){
+        root.append($(list[i]))
+    }
+
+}
+
 function main(){
     autoreplaceall()
     $("#clicktrigger").on("click", function() {
