@@ -20,7 +20,7 @@ LISTEN_PORT = 8080
 SHARE_DIR = "share/"
 SAVE_DIR = "save/"
 LOG_LEVEL = 0
-PIDFILE="/var/cyberbox.pid"
+PIDFILE="/var/run/cyberbox.pid"
 SERVER=SERVER_CONST_THREAD(4)
 USE_CACHE=True
 
