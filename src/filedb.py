@@ -60,6 +60,9 @@ class FileDB:
             return x
         return error.ERR_NOT_FOUND
 
+    def search(self, search, isadmin):
+        return self.db.search(search, isadmin, [])
+
     def add(self, dir, name):
         objdir=self.find(dir)
         ret=True

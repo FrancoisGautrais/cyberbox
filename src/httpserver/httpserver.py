@@ -8,6 +8,7 @@ import time
 from .waitqueue import WaitQueue
 import threading
 
+
 class HTTPServer(ServerSocket):
     SINGLE_THREAD="single"
     SPAWN_THREAD="spawn"
@@ -80,3 +81,5 @@ class HTTPServer(ServerSocket):
 
     def serve_file_gen(self, req: HTTPRequest, res : HTTPResponse, data):
         res.serve_file_gen(os.path.join(self.www_dir, req.path[1:]), data)
+
+

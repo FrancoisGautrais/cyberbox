@@ -4,9 +4,7 @@ from io import StringIO
 from io import BytesIO
 import magic
 
-from src import conf
 from src.httpserver import log
-from src.httpserver import utils
 
 
 from threading import Lock
@@ -85,10 +83,10 @@ class CacheEntry:
 
 class FileCache:
     _INSTANCE=None
-    def __init__(self, dirs=[]):
+    def __init__(self, dirs=[], bypass=True):
         self.db={}
         self.preload(dirs)
-        self.bypass=not conf.USE_CACHE
+        self.bypass=bypass
 
 
     def find_total_size(self):
@@ -128,7 +126,7 @@ class FileCache:
 
 class filecache:
     @staticmethod
-    def init(dirs=[]): FileCache._INSTANCE=FileCache(dirs)
+    def init(dirs=[], useCache=False): FileCache._INSTANCE=FileCache(dirs, not useCache)
 
     @staticmethod
     def preload(path): return FileCache._INSTANCE.preload(path)

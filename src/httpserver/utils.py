@@ -4,7 +4,14 @@ from threading import Lock
 from threading import Thread
 import hashlib
 
-from src.httpserver import filecache
+from src.httpserver.filecache import filecache
+
+def path_to_list(p):
+    out=[]
+    p=p.split("/")
+    for v in p:
+        if v!='': out.append(v)
+    return out
 
 
 class Callback:

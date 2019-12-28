@@ -28,6 +28,29 @@ STR_HTTP_ERROR={
 
 def fromutf8(x): return bytes(x, "utf8")
 
+_HTTP_CODE={
+    100: "Continue",
+
+    200: "OK",
+    201: "Created",
+    202: "Accepted",
+    204: "No Content",
+
+    300: "Multiple Choices",
+    301: "Moved Permanently",
+    302: "Found",
+
+    400: "Bad Request",
+    401: "Unauthorized",
+    403: "Forbidden",
+    404: "Not Found",
+
+    500: "Internal Server Error",
+    501: "Not Implemented",
+    502: "Bad Gateway",
+    503: "Service Unavailable",
+    504: "Gateway Time-out"
+}
 
 
 
@@ -257,11 +280,7 @@ class HTTPResponse(_HTTP):
         else:
             self.serve_file(path)
 
-
     def serve_file(self, path : str, urlReq=None, forceDownload=False, data={}):
-        if path.endswith(".html"):
-            return self.serve_file_gen(path, data)
-
         fd=None
         try:
             fd=filecache.open(path, "rb")
@@ -332,6 +351,41 @@ class HTTPResponse(_HTTP):
         except Exception as err:
             log.error(traceback.format_tb(limit=100))
             log.error(traceback.format_exc(limit=100))
+
+
+    def serv(self, code, headers={}, data={}, file=None, filegen=None):
+        for h in headers: self.header(h, headers[h])
+        self.code=code
+        self.msg=_HTTP_CODE[code]
+        if file:
+            self.serve_file(file)
+        elif filegen:
+            self.serve_file_gen(filegen, data)
+        else:
+            self.end(data)
+
+    def serve100(self, header={}, data={}, file=None, filegen=None ): self.serv(100, header, data, file, filegen)
+
+    def serve200(self, header={}, data={}, file=None, filegen=None ): self.serv(200, header, data, file, filegen)
+    def serve201(self, header={}, data={}, file=None, filegen=None ): self.serv(201, header, data, file, filegen)
+    def serve202(self, header={}, data={}, file=None, filegen=None ): self.serv(202, header, data, file, filegen)
+    def serve204(self, header={}, data={}, file=None, filegen=None ): self.serv(204, header, data, file, filegen)
+
+    def serve300(self, header={}, data={}, file=None, filegen=None ): self.serv(300, header, data, file, filegen)
+    def serve301(self, header={}, data={}, file=None, filegen=None ): self.serv(301, header, data, file, filegen)
+    def serve302(self, header={}, data={}, file=None, filegen=None ): self.serv(302, header, data, file, filegen)
+
+    def serve400(self, header={}, data={}, file=None, filegen=None ): self.serv(400, header, data, file, filegen)
+    def serve401(self, header={}, data={}, file=None, filegen=None ): self.serv(401, header, data, file, filegen)
+    def serve403(self, header={}, data={}, file=None, filegen=None ): self.serv(403, header, data, file, filegen)
+    def serve404(self, header={}, data={}, file=None, filegen=None ): self.serv(404, header, data, file, filegen)
+
+
+    def serve500(self, header={}, data={}, file=None, filegen=None ): self.serv(500, header, data, file, filegen)
+    def serve501(self, header={}, data={}, file=None, filegen=None ): self.serv(501, header, data, file, filegen)
+    def serve502(self, header={}, data={}, file=None, filegen=None ): self.serv(502, header, data, file, filegen)
+    def serve503(self, header={}, data={}, file=None, filegen=None ): self.serv(503, header, data, file, filegen)
+    def serve504(self, header={}, data={}, file=None, filegen=None ): self.serv(504, header, data, file, filegen)
 
 
 

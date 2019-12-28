@@ -1,13 +1,15 @@
 import os
 
-from src.httpserver import log
+from Crypto.SelfTest.Cipher.test_CFB import file_gen_name
+
+from src.httpserver import log, utils
 from src.user import User
 from .httpserver.restserver import HTTPRequest, HTTPResponse, HTTPServer
 from src import conf, error
 from .filedb import FileDB
 from src.httpserver.htmltemplate.htmlgen import html_gen
 from src.usersdb import UserDB
-
+from src.httpserver.restserver import RESTServer
 
 CACHED_FILES=[ "/js/jquery.min.js", "/js/materialize.min.js", "/js/sha256.js", "/css/materialize.css" ]
 
@@ -17,7 +19,7 @@ def _date_compare(x, y): return x["creation"]-y["creation"]
 def _name_compare(x, y): return x["name"].lower()-y["name"].lower()
 
 def _size_key(x): return (x["size"] if "size" in x else 0)
-def _date_key(x): return x["date"]
+def _date_key(x): return x["creation"]
 def _name_key(x): return x["name"].lower()
 
 def _sort(array, _field, _order):
@@ -28,20 +30,39 @@ def _sort(array, _field, _order):
     return sorted(array, key=algo, reverse=reverse)
 
 
-class Server(HTTPServer):
-    NEW_DIR = "/createdir/"
+class Server(RESTServer):
+    NEW_DIR_URL = "/createdir/"
     UPLOAD_URL="/upload/"
     SHARE_URL = "/share/"
     BROWSE_URL = "/browse/"
     FILE_URL = "/file/"
     DELETE_URL = "/delete/"
     LOGIN_URL = "/login/"
+    SEARCH_URL = "/search/"
+    RESULTS_URL = "/results/"
     DISCONNECT_URL = "/disconnect/"
 
     def __init__(self):
-        HTTPServer.__init__(self, conf.LISTEN_HOST)
+        RESTServer.__init__(self, conf.LISTEN_HOST)
         self.db=FileDB.load()
         self.users=UserDB.load()
+        self.route("GET", Server.SHARE_URL+"*path", self.handle_download)
+        self.route("GET", [Server.BROWSE_URL+"*path", "/"], self.handle_browse)
+        self.route("GET", ["/preferences.html", "/preferences"], self.handle_browse)
+        self.route("GET", Server.FILE_URL+"*path", self.handle_file_info)
+        self.route("GET", Server.DELETE_URL+"*path", self.handle_file_delete)
+        self.route("GET", Server.LOGIN_URL, self.handle_login)
+        self.route("GET", Server.SEARCH_URL, self.handle_search)
+        self.route("GET", Server.DISCONNECT_URL, self.handle_disconnect)
+        self.default(self.handle_www, methods="GET")
+
+        self.route("POST", Server.UPLOAD_URL+"*path", self.handle_upload)
+        self.route("POST", Server.NEW_DIR_URL+"*path", self.handle_new_dir)
+        self.route("POST", Server.FILE_URL+"*path", self.handle_file_modify)
+        self.route("POST", "/user/modify", self.handle_client_modify)
+        self.route("POST", "/user/delete", self.handle_client_delete)
+        self.route("POST", Server.RESULTS_URL, self.handle_results)
+        self.default(self.handle_404, methods="POST")
 
     def find_client(self, req : HTTPRequest, res : HTTPResponse, isAction):
         client=None
@@ -53,94 +74,80 @@ class Server(HTTPServer):
         if isAction: client.inc_actions()
         return client
 
-    def handlerequest(self, req : HTTPRequest, res : HTTPResponse):
-        client=self.find_client(req, res, False)
-        if req.method=="GET":
-            if req.path.startswith(Server.SHARE_URL) or  req.path==Server.SHARE_URL[:-1]:
-                return self.handle_download(req, res, client)
-            elif req.path.startswith(Server.BROWSE_URL) or req.path in (Server.BROWSE_URL[:-1], "/"):
-                return self.handle_browse(req,res, client)
-            elif req.path == "/preferences.html":
-                res.serve_file_gen(conf.www("preferences.html"), { "user" : client.json() })
-                return
-            elif req.path.startswith(Server.FILE_URL):
-                return self.handle_file_info(req, res, client)
-            elif req.path.startswith(Server.DELETE_URL):
-                return self.handle_file_delete(req, res, client)
-            elif req.path==Server.LOGIN_URL or req.path==Server.LOGIN_URL[:-1]:
-                return self.handle_login(req, res, client)
-            elif req.path==Server.LOGIN_URL or req.path==Server.DISCONNECT_URL[:-1]:
-                return self.handle_disconnect(req, res, client)
-            else:
-                self.handle_www(req, res, client)
-                return
+    def handle_client_modify(self, req : HTTPRequest, res : HTTPResponse):
+        client = self.find_client(req, res, False)
+        self.users.modify(client.id, req.body_json())
 
-        if req.method=="POST":
-            if req.path.startswith(Server.UPLOAD_URL[:-1]):
-                return self.handle_upload(req, res, client)
-            if req.path.startswith(Server.NEW_DIR[:-1]):
-                return self.handle_new_dir(req, res, client)
-            if req.path=="/user/modify":
-                return self.users.modify(client.id, req.body_json())
-            if req.path=="/user/delete":
-                return self.users.delete(client.id)
-            if req.path.startswith(Server.FILE_URL):
-                return self.handle_file_modify(req, res, client)
+    def handle_client_delete(self, req : HTTPRequest, res : HTTPResponse):
+        client = self.find_client(req, res, False)
+        self.users.delete(client.id)
 
-        self.handle_404(req, res)
+    def handle_preferences(self, req : HTTPRequest, res : HTTPResponse):
+        client = self.find_client(req, res, False)
+        res.serve_file_gen(conf.www("preferences.html"), {"user": client.json()})
 
-    def handle_file_modify(self, req : HTTPRequest, res : HTTPResponse, client ):
+    def handle_file_modify(self, req : HTTPRequest, res : HTTPResponse):
+        client = self.find_client(req, res, False)
+        path=req.params.str("path")
         data=req.body_json()
-        parent=os.path.normpath(req.path[len(Server.FILE_URL):]+"/..")
-        ret=self.db.modify(req.path[len(Server.FILE_URL):], data, client.is_admin())
+        parent=os.path.normpath(path+"/..")
+        ret=self.db.modify(path, data, client.is_admin())
         if ret==error.ERR_FORBIDDEN:
             res.code=403
-            res.end("Écriture interdite sur '"+req.path[len(Server.FILE_URL):]+"'")
+            res.end("Écriture interdite sur '"+path+"'")
         elif ret==error.ERR_NOT_FOUND:
             res.code=404
             res.end("Dossier '"+parent+"'  non trouvé")
 
 
-    def handle_file_info(self, req : HTTPRequest, res : HTTPResponse , client):
-        file=self.db.find(req.path[len(Server.FILE_URL):])
-        parent=os.path.normpath(req.path[len(Server.FILE_URL):-1]+"/..")
+    def handle_file_info(self, req : HTTPRequest, res : HTTPResponse):
+        client = self.find_client(req, res, False)
+        path=req.params.str("path")
+        file=self.db.find(path)
+        parent=os.path.normpath(path+"/..")
         if not file:
             res.code=404
-            res.end("Fichier '"+req.path[len(Server.FILE_URL):]+"' non trouvé")
+            res.end("Fichier '"+path+"' non trouvé")
         elif not file.can_read(client.is_admin()):
             res.code=403
-            res.end("Fichier '"+req.path[len(Server.FILE_URL):]+"' : accès non autorisé")
+            res.end("Fichier '"+path+"' : accès non autorisé")
         else:
             res.content_type("application/json")
             res.end(file.json())
 
-    def handle_file_delete(self, req : HTTPRequest, res : HTTPResponse, client ):
-        ret=self.db.remove(req.path[len(Server.DELETE_URL):], client.is_admin())
+    def handle_file_delete(self, req : HTTPRequest, res : HTTPResponse):
+        client = self.find_client(req, res, False)
+        path=req.params.str("path")
+        ret=self.db.remove(path, client.is_admin())
         if ret==error.ERR_NOT_FOUND:
             res.code=404
-            res.end("Fichier '"+req.path[len(Server.DELETE_URL):-1]+"' non trouvé")
+            res.end("Fichier '"+path+"' non trouvé")
         elif ret==error.ERR_FORBIDDEN:
             res.code=403
-            res.end("Fichier '"+req.path[len(Server.DELETE_URL):-1]+"' : accès non autorisé")
+            res.end("Fichier '"+path+"' : accès non autorisé")
 
-    def handle_www(self, req : HTTPRequest, res : HTTPResponse, client):
+    def handle_www(self, req : HTTPRequest, res : HTTPResponse):
+        client = self.find_client(req, res, False)
         #si le fichier n'existe pas
         path = conf.www(req.path[1:])
+        lpath=utils.path_to_list(req.path[1:])
         if not os.path.isfile(path):
             return self.handle_404(req,res)
-        if req.path.startswith("/gen/") or len(req.path.split())==2:
+
+        #
+        # Use Meta HTML with /*.html or /gen/**
+        #
+        if lpath and (lpath[0]=="gen" or (len(lpath)==1 and lpath[0].endswith(".html"))):
             res.serve_file_gen(path, { "user" : client.json() })
         else:
             res.header("Last-Modified", "Wed, 21 Oct 2015 07:28:00 GMT")
             res.header("age", "30")
-            if req.header("If-Modified-Since") and conf.USE_BROWSER_CACHE:
-                res.code=304
-                res.msg="Not Modified"
-            else:
-                res.serve_file(path)
+            if req.header("If-Modified-Since") and conf.USE_BROWSER_CACHE: res.serv304()
+            else: res.serve_file(path)
 
-    def handle_browse(self, req : HTTPRequest, res : HTTPResponse, client):
-        relpath=req.path[len(Server.BROWSE_URL):]
+    def handle_browse(self, req : HTTPRequest, res : HTTPResponse):
+        client = self.find_client(req, res, False)
+        relpath=req.params.str("path")
         abspath = conf.share(relpath)
         if os.path.isdir(abspath):
             res.content_type("text/html")
@@ -161,8 +168,9 @@ class Server(HTTPServer):
         else:
             self.handle_404(req,res)
 
-    def handle_download(self, req : HTTPRequest, res : HTTPResponse, client):
-        relpath=req.path[len(Server.SHARE_URL):]
+    def handle_download(self, req : HTTPRequest, res : HTTPResponse):
+        client = self.find_client(req, res, False)
+        relpath=req.params.str("path")
         abspath = conf.share(relpath)
         log.info("File downloaded '"+relpath+"'")
 
@@ -182,8 +190,9 @@ class Server(HTTPServer):
             res.serve_file(abspath, forceDownload=True)
             self.db.inc_download(relpath)
 
-    def handle_upload(self, req : HTTPRequest, res : HTTPResponse, client):
-        relapth=req.path[len(Server.UPLOAD_URL):]
+    def handle_upload(self, req : HTTPRequest, res : HTTPResponse):
+        client = self.find_client(req, res, False)
+        relapth=req.params.str("path")
         abspath=conf.SHARE_ABS_PATH
         if len(relapth): abspath+="/"+relapth
         x=req.multipart_next_file()
@@ -213,9 +222,11 @@ class Server(HTTPServer):
         res.content_type("text/plain")
         res.end(req.path + " Not found")
 
-    def handle_new_dir(self, req : HTTPRequest, res : HTTPResponse, client):
-        out=self.db.mkdir(req.path[len(Server.NEW_DIR):-1], client.is_admin(), {})
-        parent=req.path[len(Server.NEW_DIR):req.path.rfind('/')]
+    def handle_new_dir(self, req : HTTPRequest, res : HTTPResponse):
+        client = self.find_client(req, res, False)
+        path=req.params.str("path")
+        out=self.db.mkdir(path, client.is_admin(), {})
+        parent=os.path.dirname(path)
         if out==error.ERR_FORBIDDEN:
             res.code=403
             res.content_type("text/plain")
@@ -223,13 +234,14 @@ class Server(HTTPServer):
         elif out==error.ERR_NOT_FOUND:
             res.code=404
             res.content_type("text/plain")
-            res.end("Dossier '"+req.path[len(Server.NEW_DIR):-1]+"'  non trouvé")
+            res.end("Dossier '"+path+"'  non trouvé")
         elif out==error.ERR_FILE_EXISTS:
             res.code=403
             res.content_type("text/plain")
-            res.end("Le dossier '"+req.path[len(Server.NEW_DIR):-1]+"' existe déja")
+            res.end("Le dossier '"+path+"' existe déja")
 
-    def handle_login(self, req : HTTPRequest, res : HTTPResponse, client):
+    def handle_login(self, req : HTTPRequest, res : HTTPResponse):
+        client = self.find_client(req, res, False)
         if client.name:
             res.code=301
             res.header("Location", "/")
@@ -247,9 +259,26 @@ class Server(HTTPServer):
                 res.serve_file_gen(conf.www("login.html"), { "user" : client.json()})
 
 
-    def handle_disconnect(self, req : HTTPRequest, res : HTTPResponse, client):
+    def handle_disconnect(self, req : HTTPRequest, res : HTTPResponse):
+        client = self.find_client(req, res, False)
         self.users.set_name(client.id, None)
         res.code=301
         res.header("Location", "/")
 
-        
+    def handle_search(self, req: HTTPRequest, res: HTTPResponse):
+        client = self.find_client(req, res, False)
+        res.serve_file_gen(conf.www("search.html"), {"user" : client.json()})
+
+    def handle_results(self, req : HTTPRequest, res : HTTPResponse):
+        client = self.find_client(req, res, False)
+        search=req.body_json()
+        l=self.db.search(search, client.is_admin())
+        res.serve_file_gen(conf.www("browse.html"), {
+            "path": "",
+            "ls": l,
+            "parent": "",
+            "is_root": True,
+            "user": client.json(),
+            "can_read": True,
+            "can_write": False
+        })

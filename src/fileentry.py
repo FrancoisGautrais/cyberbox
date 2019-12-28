@@ -151,6 +151,14 @@ class FileEntry(_Entry):
         if FileEntry.F_DOWNLOAD in data: self.download=data[FileEntry.F_DOWNLOAD]
         return error.ERR_OK
 
+
+    def search(self, search, isadmin, results=[]):
+        match = search["match"].lower() if "match" in search else None
+        if match:
+            if match in self.name.lower():
+                results.append(self.moustache(False, isadmin))
+        return results
+
 class DirEntry(_Entry):
     F_CHILDREN="children"
 
@@ -225,3 +233,11 @@ class DirEntry(_Entry):
                 del self.children[name]
         if not self.can_write(isAdmin): return error.ERR_OK
 
+    def search(self, search, isadmin, results=[]):
+        match = search["match"].lower() if "match" in search else None
+        if match:
+            if match in self.name.lower():
+                results.append(self.moustache(False, isadmin))
+        for name in self.children:
+            self.children[name].search(search, isadmin, results)
+        return results

@@ -114,7 +114,7 @@ function _edit_file(name, data)
     M.updateTextFields();
 }
 
-function edit_file(name)
+function edit_file(dir, name)
 {
     current_edit_name=name
     loading("Chargement")
@@ -123,7 +123,7 @@ function edit_file(name)
         processData: false, // important
         contentType: false, // important
         dataType: 'json',
-        url: "/file"+$("#CONST_PATH").html()+"/"+name,
+        url: "/file/"+dir+name,
 
         success: function(jsonData){
             modalClose("loading")

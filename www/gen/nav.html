@@ -37,11 +37,37 @@ nav {
     margin-top: 0px;
 
 }
+.search-bar {
+    height: 64px;
+    display: none;
+    font-size: 24px ! important;
+    position: relative;
+    top: -48px;
+    width: 100%;
+}
+
+.search-bar > div > input {
+    padding-top: 10px ! important;
+    margin-left: 70px ! important;
+    width: calc( 100% - 200px ) ! important;
+    border-color: #fff  ! important;
+    border-bottom-style: double ! important;
+}
+
+
 
 
 .radio-group > span {
     margin-right: 40px;
+
 }
+
+.nav-icons {
+    position: relative;
+    top: -64px;
+    margin-left: 5px;
+}
+
 
 </style>
 
@@ -96,14 +122,84 @@ function confirm_display(){
     modalClose("display")
 }
 
+function showSearchBar() {
+    var sb=$(".search-bar")
+    var div=$("main")
+    var ab=$(".adress-bar")
+    console.log("show", sb.css("display")=="none")
+    if(sb.css("display")=="none")
+    {
+        sb.show()
+        div.css("min-height", parseInt(div.css("min-height")+64)+"px");
+        ab.height(ab.height()+64)
+        M.updateTextFields();
+        $("#it-search-bar").focus()
+    }
+}
+
+
+function hideSearchBar() {
+    var sb=$(".search-bar")
+    console.log("hide")
+    var div=$("main")
+    var ab=$(".adress-bar")
+    if(sb.css("display")!="none"){
+        sb.css("display", "none")
+        div.css("min-height", parseInt(div.css("min-height")-64)+"px");
+        ab.height(ab.height()-64)
+
+    }
+
+}
+
+function filterName(filter) {
+
+    filter=$("#it-search-bar").val().toLowerCase()
+    $(".sortable").each(function(idx, el){
+        el=$(el)
+        console.log(el.data("name").toLowerCase(), filter)
+        if(el.data("name").toLowerCase().search(filter)>=0) el.show()
+        else el.hide()
+    })
+}
+
+function toggleSearchBar(){
+    var sb=$(".search-bar")
+    return (sb.css("display")=="none")?showSearchBar():hideSearchBar()
+}
+
+function clearSearchBar() {
+    bar=$("#it-search-bar")
+    bar.val("")
+    filterName()
+    bar.focus()
+}
+
+
 </script>
 
 <nav class="adress-bar fond-color-1 color-4">
-    <div class="nav-wrapper custom-nav-wrapper">
-        <ul id="nav-" class="valign-wrapper" >
-            <div class="autoreplace" data-type="menupath" data-value="{{path}}"></div>
-        </ul>
-        <a onclick="show_display_options()" ><i class="color-4 material-icons menu-icon">build</i></a>
+    <div>
+        <span class="nav-wrapper custom-nav-wrapper">
+            <ul id="nav-" class="valign-wrapper" >
+                <div class="autoreplace" data-type="menupath" data-value="{{path}}"></div>
+            </ul>
+        </span>
+        <span class="right nav-icons" id="search-bar-trigger"><a onclick="toggleSearchBar()" ><i class="color-4 material-icons menu-icon">search</i></a></span>
+        <span class="right nav-icons"><a onclick="show_display_options()" ><i class="color-4 material-icons menu-icon">build</i></a></span>
+    </div>
+    <div class="search-bar row">
+        <div class="input-field col s12">
+            <input id="it-search-bar" type="text" class="color-4 medium-text" oninput="filterName()">
+            <label for="it-search-bar"></label>
+            <i class="material-icons prefix medium-icon color-4" onclick="clearSearchBar()">cancel</i>
+        </div>
+        <!--
+        <i class="material-icons prefix medium-icon color-4">cancel</i>
+        <span class="input-field">
+            <input value="" id="it-search-bar" type="text" class="validate color-4 medium-text" oninput="filterName()">
+            <label for="it-search-bar" class="color-4 medium-text"></label>
+        </span>-->
     </div>
 </nav>
 

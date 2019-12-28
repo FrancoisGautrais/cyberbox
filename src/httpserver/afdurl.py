@@ -1,20 +1,20 @@
+from .utils import path_to_list
 
-def stripemptystr(p):
-    out=[]
-    p=p.split("/")
-    for v in p:
-        if v!='': out.append(v)
-    return out
 
 class RESTParams(dict):
 
     def __init__(self):
         dict.__init__(self)
-    
+
+    def str(self, name):
+        x=self[name]
+        if isinstance(x, (list, tuple)): return "/".join(x)
+        return x
+
 class AfdUrl:
 
     def __init__(self, template):
-        self.template=stripemptystr(template)
+        self.template=path_to_list(template)
         self.index=0
         self.args={}
 
@@ -70,7 +70,7 @@ class AfdUrl:
         return self.next(url, args)
 
     def parse(self, url):
-        return self.next(stripemptystr(url), RESTParams())
+        return self.next(path_to_list(url), RESTParams())
 
 def testurl(template, url):
     return AfdUrl(template).parse(url)

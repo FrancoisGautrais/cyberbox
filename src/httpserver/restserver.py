@@ -4,46 +4,6 @@ from .afdurl import testurl
 from .utils import Callback
 import os
 
-"""
-def stripemptystr(p):
-    out=[]
-    for v in p:
-        if v!='': out.append(v)
-    return out
-
-def testurl(template, url):
-        url=stripemptystr(url.split("/"))
-        template=stripemptystr(template.split("/"))
-        args={ "*" : []}
-
-        if len(url) != len(template): return None
-
-        i=0 #url index
-        j=0 #template index
-        while i<len(url) and j<len(template):
-            ct=template[j]
-            cu=url[i]
-            if ct[0]=="#":
-                args[ct[1:]]=cu
-                i+=1
-                j+=1
-            elif ct=="*":
-                nextT=
-            elif ct!=cu: return None
-            else:
-                i+=1
-                j+=1
-
-        for i in range(0,len(template)):
-            v=template[i]
-            if v[0]=='#':
-                args[v[1:]]=url[i]
-            elif v!=url[i]: return None
-
-        return args
-"""
-
-
 class RESTServer(HTTPServer):
 
     def __init__(self, ip="localhost"):
@@ -74,7 +34,7 @@ class RESTServer(HTTPServer):
                 
     """
     def route(self, methods, urls, fct, obj=None, data=None):
-        if isinstance(urls, str): urls=[urls]
+        if not isinstance(urls, (list, tuple)): urls=[urls]
         if isinstance(methods, str): methods = [methods]
         for method in methods:
             if not (method in self._handlers):
