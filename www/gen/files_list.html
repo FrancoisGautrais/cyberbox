@@ -25,6 +25,7 @@
 
 .list-filename {
     font-size: 24px ! important;
+    margin-bottom: 8px;
 }
 </style>
 {{^is_root}}
@@ -63,9 +64,11 @@
                         {{^is_dir}}<div class="autoreplace" data-type="mime" data-value="{{mime}}"></div>{{/is_dir}}
                     </i>
                 </span>
-                <span class="custom-list-item">
-                    <span class="list-filename">{{name}}</span>
-                    <p>{{^is_dir}}<div class="autoreplace" data-type="size" data-value="{{size}}"></div>|{{/is_dir}}</p>
+                <span class="custom-list-item second-line">
+                    <div class="list-filename">{{name}}</div>
+                    {{^is_dir}}<div class="autoreplace" data-type="size" data-value="{{size}}"></div> {{/is_dir}}
+                        {{#is_dir}}{{length}} éléments{{/is_dir}} |  <div class="autoreplace" data-type="date" data-value="{{creation}}"></div>
+
                 </span>
             </a>
         </li>

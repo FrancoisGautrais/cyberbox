@@ -13,11 +13,26 @@ class SocketWrapper:
         self._socket=llsocket
         self.sent=0
         self.buffer=bytearray()
+        self._recieved=bytearray()
+        self._sent=bytearray()
+
 
 
     def send(self, s):
         if isinstance(s, str): s = bytes(s, "utf8")
+        self._sent+=s
         return self._socket.sendall(s)
+
+    def _recv(self, n=1):
+        b=self._socket.recv(n)
+        self._recieved+=b
+        return b
+
+    def dump_recevied(self):
+        log.error("======== dump ==============")
+        log.error(self._recieved.decode(errors="replace"))
+        log.error("======== end dump ==============")
+
 
     def read(self, l=1):
         base=bytearray()
@@ -32,7 +47,8 @@ class SocketWrapper:
             while bytes_recd < l:
                 chunk = self._socket.recv(min(l - bytes_recd, 2048))
                 if chunk == b'':
-                    raise Exception("socket connection broken, bytes left : "+str(bytes_recd-l))
+                    self.dump_recevied()
+                    raise Exception("socket connection broken, bytes left : "+str(l-bytes_recd), "chucks = ", base)
                 base+=chunk
                 bytes_recd = bytes_recd + len(chunk)
         return bytes(base)

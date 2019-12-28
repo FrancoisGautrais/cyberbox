@@ -35,13 +35,14 @@
                     </i>
                 </center>
             </a>
+
             <div class="custom-card-action card-action ">
                 <span class="color-5">
                     <center class="tile-filename"><div class="autoreplace" data-type="boundtext" data-value="{{name}}"></div></center>
                     <div class="second-line">
-                        <div class="tile-filename left valign-wrapper">{{^is_dir}}
+                        <div class="file-info left valign-wrapper">{{^is_dir}}
                             <div class="autoreplace" data-type="size" data-value="{{size}}"></div>{{/is_dir}}
-                            {{#is_dir}}<div>{{length}} éléments</div>{{/is_dir}}
+                            {{^is_dir}} | {{/is_dir}}<div class="autoreplace" data-type="date" data-value="{{creation}}"></div></p>
                         </div>
                         <div class="right" onclick="edit_file('{{name}}')">
                                 <i class="medium material-icons color-2">create</i>
@@ -63,6 +64,11 @@
 
 .second-line {
     display: flow-root;
+}
+
+.file-info {
+    font-size: 16px ! important;
+    margin-top: 12px;
 }
 
 .tile-icon {

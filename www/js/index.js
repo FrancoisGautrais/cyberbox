@@ -174,6 +174,16 @@ MIME={
 
 
 function min(x,y){ return x>y?x:y }
+function padd(x, n=2) {
+    x=""+x
+    while(x.length<n) x="0"+x
+    return x
+}
+function autoreplace_date(text){
+    timestamp=parseFloat(text)
+    date = new Date(timestamp * 1000)
+    return padd(date.getDate())+"/"+padd(date.getMonth()+1)+"/"+date.getFullYear()+" "+padd(date.getHours())+":"+padd(date.getMinutes())
+}
 
 function autoreplace_boundtext(text){
     max_size=13
