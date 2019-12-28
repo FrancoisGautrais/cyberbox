@@ -28,28 +28,9 @@ STR_HTTP_ERROR={
 
 def fromutf8(x): return bytes(x, "utf8")
 
-def stripemptystr(p):
-    out=[]
-    for v in p:
-        if v!='': out.append(v)
-    return out
 
 
 
-def testurl(template, url):
-        url=stripemptystr(url.split("/"))
-        template=stripemptystr(template.split("/"))
-        args={}
-
-        if len(url) != len(template): return None
-
-        for i in range(0,len(template)):
-            v=template[i]
-            if v[0]=='#':
-                args[v[1:]]=url[i]
-            elif v!=url[i]: return None
-
-        return args
 
 BODY_DICT="dict"
 BODY_EMPTY="none"

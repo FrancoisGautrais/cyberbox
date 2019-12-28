@@ -1,3 +1,5 @@
+from src.httpserver.afdurl import AfdUrl
+
 from src import conf
 from src.server import Server
 import sys

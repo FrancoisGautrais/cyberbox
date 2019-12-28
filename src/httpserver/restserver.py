@@ -1,7 +1,48 @@
 from .httpserver import HTTPServer
-from .httprequest import HTTPRequest, HTTPResponse, testurl
+from .httprequest import HTTPRequest, HTTPResponse
+from .afdurl import testurl
 from .utils import Callback
 import os
+
+"""
+def stripemptystr(p):
+    out=[]
+    for v in p:
+        if v!='': out.append(v)
+    return out
+
+def testurl(template, url):
+        url=stripemptystr(url.split("/"))
+        template=stripemptystr(template.split("/"))
+        args={ "*" : []}
+
+        if len(url) != len(template): return None
+
+        i=0 #url index
+        j=0 #template index
+        while i<len(url) and j<len(template):
+            ct=template[j]
+            cu=url[i]
+            if ct[0]=="#":
+                args[ct[1:]]=cu
+                i+=1
+                j+=1
+            elif ct=="*":
+                nextT=
+            elif ct!=cu: return None
+            else:
+                i+=1
+                j+=1
+
+        for i in range(0,len(template)):
+            v=template[i]
+            if v[0]=='#':
+                args[v[1:]]=url[i]
+            elif v!=url[i]: return None
+
+        return args
+"""
+
 
 class RESTServer(HTTPServer):
 
@@ -59,6 +100,7 @@ class RESTServer(HTTPServer):
         res.msg = "Not Found"
         res.content_type("text/plain")
         res.end(req.path + " Not found")
+
 
     """
         Permet de router la requête
