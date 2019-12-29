@@ -33,6 +33,7 @@ class _Entry:
     F_CREATION="creation"
     F_NAME="name"
     F_TYPE="type"
+    F_DIR="dir"
     #
     # String h: hidden, r: can read, w: can write
     #
@@ -62,6 +63,7 @@ class _Entry:
     def json(self):
         return {
             _Entry.F_NAME: self.name,
+            _Entry.F_DIR: self.dir,
             _Entry.F_CREATION: self.creation,
             _Entry.F_TYPE: self.type,
             _Entry.F_ATTRS: self.attrs,
@@ -99,6 +101,13 @@ class _Entry:
         if FileEntry.F_ATTRS in data: self.attrs=data[FileEntry.F_ATTRS]
         return error.ERR_OK
 
+    def search(self, search, isadmin, results=[]):
+        match = search["match"].lower() if "match" in search else None
+        if self.is_hidden(isadmin): return
+        if match:
+            if match in self.name.lower():
+                results.append(self.moustache(False, isadmin))
+
 class FileEntry(_Entry):
     F_SIZE="size"
     F_MIME="mime"
@@ -110,7 +119,6 @@ class FileEntry(_Entry):
         self.mime=_attr(js, FileEntry.F_MIME, None)
         self.download=_attr(js, FileEntry.F_DOWNLOAD, 0)
         if update: self.update(True)
-
     def json(self):
         ret=_Entry.json(self)
         ret.update({
@@ -128,6 +136,9 @@ class FileEntry(_Entry):
             FileEntry.F_DOWNLOAD: self.download
         })
         return ret
+
+    def info(self, isAdmin):
+        return self.json()
 
     def update(self, isAdmin):
         if not self.can_write(isAdmin): return error.ERR_FORBIDDEN
@@ -153,11 +164,7 @@ class FileEntry(_Entry):
 
 
     def search(self, search, isadmin, results=[]):
-        match = search["match"].lower() if "match" in search else None
-        if match:
-            if match in self.name.lower():
-                results.append(self.moustache(False, isadmin))
-        return results
+        _Entry.search(self, search, isadmin, results )
 
 class DirEntry(_Entry):
     F_CHILDREN="children"
@@ -192,10 +199,15 @@ class DirEntry(_Entry):
                     children.append(self.children[child].moustache(False, showHdden))
             return children
 
+    def info(self, isAdmin):
+        x=_Entry.json(self)
+        x["length"]=len(self.children)
+        return x
+
     def remove(self, isAdmin):
         if not self.can_write(isAdmin): return error.ERR_FORBIDDEN
         for f in self.children:
-            f.remove()
+            self.children[f].remove(isAdmin)
         os.rmdir(self.abspath)
         return error.ERR_OK
 
@@ -234,10 +246,8 @@ class DirEntry(_Entry):
         if not self.can_write(isAdmin): return error.ERR_OK
 
     def search(self, search, isadmin, results=[]):
-        match = search["match"].lower() if "match" in search else None
-        if match:
-            if match in self.name.lower():
-                results.append(self.moustache(False, isadmin))
-        for name in self.children:
-            self.children[name].search(search, isadmin, results)
+        _Entry.search(self, search, isadmin, results )
+        if self.can_read(isadmin):
+            for name in self.children:
+                self.children[name].search(search, isadmin, results)
         return results

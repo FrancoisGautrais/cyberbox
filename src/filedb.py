@@ -76,7 +76,7 @@ class FileDB:
         pathl=path.split("/")
         dir=pathl[:-1]
         name=pathl[-1]
-        os.mkdir(path)
+        os.mkdir(conf.share(path))
         x=self.add(dir, name)
         if attr:
             obj=self.find(path)

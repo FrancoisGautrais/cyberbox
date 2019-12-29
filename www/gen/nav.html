@@ -2,27 +2,29 @@
 
 <style>
 nav {
-    padding-top:12px;
     padding-left:12px;
-    height: 96px;
-    box-shadow: unset;
     margin-bottom: 20px;
 }
 .menu-text {
     font-size: 24px ! important;
 }
 
-.navbar-item {
-    padding-bottom: 12px;
-    padding-top: 12px;
-}
+
 
 .menu {
-    font-size: 36px;
-    padding-left: 2px;
-    padding-right: 2px;
+    font-size: 12px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
+.adress-bar > span {
+    height: 48px;
+    display: block;
+}
+
+.prefix {
+    top: 0px ! important;
+}
 
 .adress-bar > div > a {
     position: absolute;
@@ -30,41 +32,18 @@ nav {
     top: 0px;
 }
 
-.radio, .radio-group {
-    font-size: 24px ! important;
-    margin-right: 20px;
-    margin-bottom: 20px;
-    margin-top: 0px;
-
+.search-bar > div {
+    position: absolute;
 }
+
 .search-bar {
-    height: 64px;
     display: none;
-    font-size: 24px ! important;
-    position: relative;
-    top: -48px;
-    width: 100%;
+    height: 48px;
+    margin-left: -18px;
 }
 
-.search-bar > div > input {
-    padding-top: 10px ! important;
-    margin-left: 70px ! important;
-    width: calc( 100% - 200px ) ! important;
-    border-color: #fff  ! important;
-    border-bottom-style: double ! important;
-}
-
-
-
-
-.radio-group > span {
-    margin-right: 40px;
-
-}
 
 .nav-icons {
-    position: relative;
-    top: -64px;
     margin-left: 5px;
 }
 
@@ -72,7 +51,6 @@ nav {
 </style>
 
 <script>
-
 function radioValue(name, val=null) {
     if(val)
     {
@@ -129,9 +107,9 @@ function showSearchBar() {
     console.log("show", sb.css("display")=="none")
     if(sb.css("display")=="none")
     {
-        sb.show()
-        div.css("min-height", parseInt(div.css("min-height")+64)+"px");
-        ab.height(ab.height()+64)
+        sb.css("display", "block")
+        div.css("min-height", parseInt(div.css("min-height")+48)+"px");
+        ab.height(ab.height()+48)
         M.updateTextFields();
         $("#it-search-bar").focus()
     }
@@ -145,8 +123,8 @@ function hideSearchBar() {
     var ab=$(".adress-bar")
     if(sb.css("display")!="none"){
         sb.css("display", "none")
-        div.css("min-height", parseInt(div.css("min-height")-64)+"px");
-        ab.height(ab.height()-64)
+        div.css("min-height", parseInt(div.css("min-height")-48)+"px");
+        ab.height(ab.height()-48)
 
     }
 
@@ -179,27 +157,20 @@ function clearSearchBar() {
 </script>
 
 <nav class="adress-bar fond-color-1 color-4">
-    <div>
-        <span class="nav-wrapper custom-nav-wrapper">
-            <ul id="nav-" class="valign-wrapper" >
-                <div class="autoreplace" data-type="menupath" data-value="{{path}}"></div>
-            </ul>
-        </span>
+    <span>
+
+        <ul>
+            <div class="autoreplace" data-type="menupath" data-value="{{path}}"></div>
+        </ul>
         <span class="right nav-icons" id="search-bar-trigger"><a onclick="toggleSearchBar()" ><i class="color-4 material-icons menu-icon">search</i></a></span>
         <span class="right nav-icons"><a onclick="show_display_options()" ><i class="color-4 material-icons menu-icon">build</i></a></span>
-    </div>
+    </span>
     <div class="search-bar row">
         <div class="input-field col s12">
+            <i class="material-icons prefix menu-icon color-4" onclick="clearSearchBar()">cancel</i>
             <input id="it-search-bar" type="text" class="color-4 medium-text" oninput="filterName()">
             <label for="it-search-bar"></label>
-            <i class="material-icons prefix medium-icon color-4" onclick="clearSearchBar()">cancel</i>
         </div>
-        <!--
-        <i class="material-icons prefix medium-icon color-4">cancel</i>
-        <span class="input-field">
-            <input value="" id="it-search-bar" type="text" class="validate color-4 medium-text" oninput="filterName()">
-            <label for="it-search-bar" class="color-4 medium-text"></label>
-        </span>-->
     </div>
 </nav>
 

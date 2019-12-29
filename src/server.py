@@ -48,16 +48,16 @@ class Server(RESTServer):
         self.users=UserDB.load()
         self.route("GET", Server.SHARE_URL+"*path", self.handle_download)
         self.route("GET", [Server.BROWSE_URL+"*path", "/"], self.handle_browse)
-        self.route("GET", ["/preferences.html", "/preferences"], self.handle_browse)
+        self.route("GET", ["/preferences.html", "/preferences"], self.handle_preferences)
         self.route("GET", Server.FILE_URL+"*path", self.handle_file_info)
         self.route("GET", Server.DELETE_URL+"*path", self.handle_file_delete)
         self.route("GET", Server.LOGIN_URL, self.handle_login)
         self.route("GET", Server.SEARCH_URL, self.handle_search)
         self.route("GET", Server.DISCONNECT_URL, self.handle_disconnect)
+        self.route("GET", Server.NEW_DIR_URL+"*path", self.handle_new_dir)
         self.default(self.handle_www, methods="GET")
 
         self.route("POST", Server.UPLOAD_URL+"*path", self.handle_upload)
-        self.route("POST", Server.NEW_DIR_URL+"*path", self.handle_new_dir)
         self.route("POST", Server.FILE_URL+"*path", self.handle_file_modify)
         self.route("POST", "/user/modify", self.handle_client_modify)
         self.route("POST", "/user/delete", self.handle_client_delete)
@@ -113,7 +113,7 @@ class Server(RESTServer):
             res.end("Fichier '"+path+"' : accès non autorisé")
         else:
             res.content_type("application/json")
-            res.end(file.json())
+            res.end(file.info(client.is_admin()))
 
     def handle_file_delete(self, req : HTTPRequest, res : HTTPResponse):
         client = self.find_client(req, res, False)

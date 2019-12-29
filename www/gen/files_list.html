@@ -20,9 +20,13 @@
     height: 100%;
 }
 
-.list-filename {
-    font-size: 24px ! important;
+.title-filename {
+    font-size: 14px ! important;
     margin-bottom: 8px;
+}
+
+.subtitle-filename {
+    font-size: 12px ! important;
 }
 
 
@@ -31,22 +35,22 @@
     <ul class="collection">
         <li class="collection-item custom-list" onclick="window.location.href='/browse/{{parent}}'">
             <span class="custom-list-item-icon">
-                <i class="material-icons big-icon color-1">keyboard_backspace</i>
+                <i class="material-icons medium-icon color-1">keyboard_backspace</i>
             </span>
             <span style="position: absolute; margin-top: 30px; margin-left: 10px;">
-                <span class="list-filename">Retour</span>
+                <span class="title-filename">Retour</span>
             </span>
         </li>
     </ul>
 {{/is_root}}
-{{#can_write>}}
+{{#can_write}}
 <ul class="collection">
     <li class="collection-item custom-list" onclick="on_new()">
         <span class="custom-list-item-icon">
-            <i class="material-icons big-icon color-1">add</i>
+            <i class="material-icons medium-icon color-1">add</i>
         </span>
-        <span style="position: absolute; margin-top: 30px; margin-left: 10px;">
-            <span class="list-filename">Ajouter un fichier</span>
+        <span class="custom-list-item second-line">
+            <span class="title-filename"><br>Nouveau</span>
         </span>
     </li>
 </ul>
@@ -60,20 +64,22 @@
                 <span>
                     <a href="{{url_prefix}}{{dir}}{{name}}" class="list-link">
                         <span class="custom-list-item-icon">
-                            <i class="material-icons big-icon color-3">
+                            <i class="material-icons medium-icon color-3">
                                 {{#is_dir}}folder{{/is_dir}}
                                 {{^is_dir}}<div class="autoreplace" data-type="mime" data-value="{{mime}}"></div>{{/is_dir}}
                             </i>
                         </span>
                         <span class="custom-list-item second-line">
-                            <div class="list-filename">{{name}}</div>
-                            {{^is_dir}}<div class="autoreplace" data-type="size" data-value="{{size}}"></div> {{/is_dir}}
-                                {{#is_dir}}{{length}} éléments{{/is_dir}} |  <div class="autoreplace" data-type="date" data-value="{{creation}}"></div>
+                            <div class="title-filename">{{name}}</div>
+                            <div class="subtitle-filename">
+                                {{^is_dir}}<div class="autoreplace" data-type="size" data-value="{{size}}"></div> {{/is_dir}}
+                                    {{#is_dir}}{{length}} éléments{{/is_dir}} |  <div class="autoreplace" data-type="date" data-value="{{creation}}"></div>
+                            </div>
                         </span>
                     </a>
                 </span>
                 <span>
-                    <a onclick="edit_file('{{dir}}','{{name}}')" class="secondary-content"><i class="material-icons big-icon">create</i></a>
+                    <a onclick="edit_file('{{dir}}','{{name}}')" class="secondary-content"><i class="material-icons medium-small-icon">create</i></a>
                 </span>
             </span>
 

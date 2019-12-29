@@ -87,6 +87,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+function url(x){window.location.href=x}
+
 $(document).ready(function(){
     autoreplaceall()
     $('select').formSelect();
@@ -95,7 +97,7 @@ $(document).ready(function(){
     $('.modal').each(function(i, obj){
         MODALS[obj.attributes["id"].value]=M.Modal.getInstance(obj)
     })
-
+    $('.dropdown-trigger').dropdown();
 
     if (typeof main === "function") {
         main();

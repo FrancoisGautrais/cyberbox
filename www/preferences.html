@@ -2,6 +2,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no">
   <link href="css/demo.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="/css/materialize.css">
   <link rel="stylesheet" type="text/css" href="/gen/colors.css">
@@ -22,11 +23,11 @@
             <div class="container">
                 <div class="row">
                     <div class="input-field col offset-s3 s6" >
-                        <select id="select_display">
+                        Mode d'affichage
+                        <select id="select_display" class="<#mobile('browser-default')>">
                             <option value="tile">Affichage tuile</option>
                             <option value="list">Affichage liste</option>
                         </select>
-                        <label>Mode d'affichage</label>
                     </div>
                 </div>
                 <div class="row">

@@ -6,21 +6,21 @@
         <center><span class="card-title" >Ajouter</span></center>
     </div>
     <div class="card-action row">
-        <div class="card darken-1 col s5 fond-color-2 color-4" onclick="new_dir()">
+        <div class="card darken-1 col s6 fond-color-3 color-4" onclick="new_dir()">
             <div class="card-content">
-                <center><span class="card-title" >Dossier</span></center>
+                <center>Dossier</center>
             </div>
             <div class="card-action row">
-                <center><i class="material-icons big-icon">folder</i></center>
+                <center><i class="material-icons medium-icon">folder</i></center>
             </div>
         </div>
 
-        <div class="card darken-1 col offset-s2 s5 fond-color-2 color-4" onclick="new_file()">
+        <div class="card darken-1 col  s6 fond-color-2 color-4" onclick="new_file()">
             <div class="card-content">
-                <center><span class="card-title" >Fichier</span></center>
+                <center>Fichier</center>
             </div>
             <div class="card-action row">
-                <center><i class="material-icons big-icon">insert_drive_file</i></center>
+                <center><i class="material-icons medium-icon">insert_drive_file</i></center>
             </div>
         </div>
 
@@ -40,7 +40,7 @@
                 <label for="new_dir">Nom</label>
             </div>
         </div>
-        <a class="btn fond-color-2 color-4 col offset-s3 s6">Créer</a>
+        <a class="btn fond-color-2 color-4 col offset-s3 s6" onclick="confrmNewDir()">Créer</a>
     </div>
 </div>
 
@@ -96,7 +96,28 @@
     </div>
 </div>
 
+<div class="card darken-1 modal" id="file_info">
+    <div class="card-action">
+        <table>
+            <tbody id="fi_tbody">
+            </tbody>
+        </table>
+    </div>
+</div>
 
+<div class="card darken-1 modal" id="file_click">
+    <div class="card-content">
+        <center><span class="card-title" id="fc_name"></span></center>
+    </div>
+    <div class="card-action row">
+        <div class="collection">
+            <a class="collection-item" id="fc_info">Informations</a>
+            <a class="collection-item" id="fc_download">Télécharger</a>
+            <a class="collection-item" id="fc_modify">Modifier</a>
+            <a class="collection-item" id="fc_remove">Supprimer</a>
+        </div>
+    </div>
+</div>
 <style>
 .overlay{
     height: 100%;
