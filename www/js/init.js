@@ -91,7 +91,6 @@ function url(x){window.location.href=x}
 
 $(document).ready(function(){
     autoreplaceall()
-    $('select').formSelect();
 
     $('.modal').modal();
     $('.modal').each(function(i, obj){
@@ -102,4 +101,5 @@ $(document).ready(function(){
     if (typeof main === "function") {
         main();
     }
+    $('select').formSelect();
 })

@@ -81,7 +81,11 @@ def parse_urlencoded_params(string):
             value = unquote(k[n + 1:])
         else:
             key = unquote(k)
-        out[key] = value
+        if key in out:
+            if not isinstance(out[key], list):
+                out[key]=[out[key], value]
+            else: out[key].append(value)
+        else: out[key] = value
     return out
 
 class _HTTP:

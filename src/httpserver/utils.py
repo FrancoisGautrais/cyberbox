@@ -87,3 +87,47 @@ def dictinit(*args):
     for k in args:
         out.update(k)
     return k
+
+
+_MIME_TO_TYPES={
+    "audio" : { "*": "audio"},
+    "video" : { "*": "video"},
+    "image" : { "*": "image"},
+    "text" : { "*": "document" },
+    "application" :  {
+        #Archives
+        "zip,x-bzip,x-tar,x-rar-compressed,bzip2,x-tar+gzip,gzip" : "archive",
+
+        #defaut
+        "*" 				: "document"
+    },
+    "*" : "document"
+}
+MIME_TO_TYPES={}
+
+def _init_mime():
+    global _MIME_TO_TYPES
+    global MIME_TO_TYPES
+    out={}
+    out["*"]=_MIME_TO_TYPES["*"]
+    for x in _MIME_TO_TYPES:
+        if x!="*":
+            out[x]={}
+            for k in _MIME_TO_TYPES[x]:
+                if k!="*":
+                    li=k.split(",")
+                    val=_MIME_TO_TYPES[x][k]
+                    for key in li:
+                        out[x][key]=val
+            out[x]["*"]=_MIME_TO_TYPES[x]["*"]
+    out["*"] = _MIME_TO_TYPES["*"]
+    MIME_TO_TYPES=out
+
+_init_mime()
+
+def mime_to_type(m):
+    first, second = m .split("/")
+    if first in MIME_TO_TYPES:
+        if second in MIME_TO_TYPES: return MIME_TO_TYPES[first][second]
+        return MIME_TO_TYPES[first]["*"]
+    return MIME_TO_TYPES["*"]

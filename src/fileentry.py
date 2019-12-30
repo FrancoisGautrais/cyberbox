@@ -1,5 +1,6 @@
 from src import conf, error
 import os
+from src.httpserver.utils import mime_to_type
 
 from src.httpserver import log
 from src.httpserver.filecache import filecache
@@ -14,6 +15,7 @@ def new_from_js(dir, js):
             return DirEntry(dir, js)
         elif type==_Entry.FILE:
             return FileEntry(dir, js)
+
     raise Exception("Error no type specified")
 
 def new_from_fs(dir, name):
@@ -34,6 +36,7 @@ class _Entry:
     F_NAME="name"
     F_TYPE="type"
     F_DIR="dir"
+    F_META="meta"
     #
     # String h: hidden, r: can read, w: can write
     #
@@ -46,6 +49,7 @@ class _Entry:
         self.creation=_attr(js, _Entry.F_CREATION, -1)
         self.name=_attr(js, _Entry.F_NAME, "")
         self.attrs=_attr(js, _Entry.F_ATTRS, "hrw" if len(self.name)>0 and self.name[0]=="." else "rw")
+        self.meta=_attr(js, _Entry.F_META, {})
 
         self.reldir=self.dir
         self.relpath=os.path.join(self.reldir, self.name)
@@ -67,6 +71,7 @@ class _Entry:
             _Entry.F_CREATION: self.creation,
             _Entry.F_TYPE: self.type,
             _Entry.F_ATTRS: self.attrs,
+            _Entry.F_META: self.meta
         }
 
     def can_read(self, isAdmin):
@@ -103,10 +108,9 @@ class _Entry:
 
     def search(self, search, isadmin, results=[]):
         match = search["match"].lower() if "match" in search else None
-        if self.is_hidden(isadmin): return
-        if match:
-            if match in self.name.lower():
-                results.append(self.moustache(False, isadmin))
+        if self.is_hidden(isadmin): return False
+        if match and not (match in self.name.lower()): return False
+        return True
 
 class FileEntry(_Entry):
     F_SIZE="size"
@@ -164,7 +168,10 @@ class FileEntry(_Entry):
 
 
     def search(self, search, isadmin, results=[]):
-        _Entry.search(self, search, isadmin, results )
+        if _Entry.search(self, search, isadmin, results ):
+            types = search["types"] if "types" in search else None
+            if types and not (mime_to_type(self.mime) in types): return
+            results.append(self.moustache(False, isadmin))
 
 class DirEntry(_Entry):
     F_CHILDREN="children"
@@ -246,7 +253,11 @@ class DirEntry(_Entry):
         if not self.can_write(isAdmin): return error.ERR_OK
 
     def search(self, search, isadmin, results=[]):
-        _Entry.search(self, search, isadmin, results )
+        if _Entry.search(self, search, isadmin, results ):
+            types = search["types"] if "types" in search else None
+            if types and not ("dir" in types):
+                results.append(self.moustache(False, isadmin))
+
         if self.can_read(isadmin):
             for name in self.children:
                 self.children[name].search(search, isadmin, results)

@@ -43,6 +43,10 @@ def inst_objl(args, data):
 
 def inst_None(args, data): return None
 
+def inst_true(args, data): return True
+
+def inst_false(args, data): return False
+
 def inst_bloc(args, data):
     return args[-1]
 

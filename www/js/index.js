@@ -289,17 +289,51 @@ function autoreplace_size(value){
 }
 
 
-function autoreplace_mime(mime) {
-    if(mime.startsWith("audio/")) return "audiotrack"
-    if(mime.startsWith("video/")) return "movie"
-    if(mime.startsWith("image/")) return "photo"
-    if(mime.startsWith("text/")) return "format_align_justify"
-    if(mime=="application/pdf") return "picture_as_pdf"
+MIME_TO_TYPES={
+    "audio" : { "*": "audiotrack"},
+    "video" : { "*": "movie"},
+    "image" : { "*": "photo"},
+    "text" : { "*": "insert_drive_file" },
+    "application" :  {
+		//Archives
+		"zip,x-bzip,x-tar,x-rar-compressed,bzip2,x-tar+gzip,gzip" : "archive",
 
-    if( mime in ["application/zip", "application/x-tar", "application/x-rar-compressed",
-                "application/x-bzip", "application/x-bzip2", "application/x-tar+gzip", "application/gzip"]) return "archive"
-    return "insert_drive_file"
+		//defaut
+		"*" 				: "insert_drive_file"
+	},
+    "*" : "insert_drive_file"
 }
+
+
+function initMimeTypes()
+{
+	out={ "*" : MIME_TO_TYPES["*"]}
+	for(var k in MIME_TO_TYPES) {
+		if(k!="*") {
+			for(var s in MIME_TO_TYPES[k])
+			{
+				val=MIME_TO_TYPES[k][s]
+				list=s.split(",")
+				for(var l in list)
+					out[k+"/"+list[l]] = val
+			}
+		}
+	}
+	MIME_TO_TYPES=out
+}
+
+initMimeTypes()
+
+function mimeToTypes(mime){
+	mime=mime.split("/")
+	first=mime[0]
+	second=mime[1]
+	if( !(first in MIME_TO_TYPES) )  return MIME_TO_TYPES["*"]
+	if( !(second in MIME_TO_TYPES[first])) return MIME_TO_TYPES[first]["*"]
+	return MIME_TO_TYPES[first][second]
+}
+
+function autoreplace_mime(mime) {  return mimeToTypes(mime) }
 
 function autoreplace_menupath(path)
 {
