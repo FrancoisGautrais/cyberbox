@@ -59,31 +59,23 @@
 
 {{#ls}}
     <ul class="collection sortable" data-name="{{name}}" data-size="{{size}}" data-date="{{creation}}">
+    <a onclick="click_open('{{dir}}', '{{name}}', {{#is_dir}}true{{/is_dir}}{{^is_dir}}false{{/is_dir}})">
         <li class="collection-item custom-list" >
-            <span>
-                <span>
-                    <a href="{{url_prefix}}{{dir}}{{name}}" class="list-link">
-                        <span class="custom-list-item-icon">
-                            <i class="material-icons medium-icon color-3">
-                                {{#is_dir}}folder{{/is_dir}}
-                                {{^is_dir}}<div class="autoreplace" data-type="mime" data-value="{{mime}}"></div>{{/is_dir}}
-                            </i>
-                        </span>
-                        <span class="custom-list-item second-line">
-                            <div class="title-filename">{{name}}</div>
-                            <div class="subtitle-filename">
-                                {{^is_dir}}<div class="autoreplace" data-type="size" data-value="{{size}}"></div> {{/is_dir}}
-                                    {{#is_dir}}{{length}} éléments{{/is_dir}} |  <div class="autoreplace" data-type="date" data-value="{{creation}}"></div>
-                            </div>
-                        </span>
-                    </a>
-                </span>
-                <span>
-                    <a onclick="edit_file('{{dir}}','{{name}}')" class="secondary-content"><i class="material-icons medium-small-icon">create</i></a>
-                </span>
+            <span class="custom-list-item-icon">
+                <i class="material-icons medium-icon color-3">
+                    {{#is_dir}}folder{{/is_dir}}
+                    {{^is_dir}}<div class="autoreplace" data-type="mime" data-value="{{mime}}"></div>{{/is_dir}}
+                </i>
             </span>
-
+            <span class="custom-list-item second-line">
+                <div class="title-filename color-5">{{name}}</div>
+                <div class="subtitle-filename color-5">
+                    {{^is_dir}}<div class="autoreplace" data-type="size" data-value="{{size}}"></div> {{/is_dir}}
+                        {{#is_dir}}{{length}} éléments{{/is_dir}} |  <div class="autoreplace" data-type="date" data-value="{{creation}}"></div>
+                </div>
+            </span>
         </li>
+    </a>
     </ul>
 
 {{/ls}}

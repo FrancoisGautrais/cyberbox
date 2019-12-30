@@ -1,6 +1,6 @@
 import os
 
-from Crypto.SelfTest.Cipher.test_CFB import file_gen_name
+
 
 from src.httpserver import log, utils
 from src.user import User
@@ -46,8 +46,9 @@ class Server(RESTServer):
         RESTServer.__init__(self, conf.LISTEN_HOST)
         self.db=FileDB.load()
         self.users=UserDB.load()
+        self.route("GET", "/", self.handle_redirect)
         self.route("GET", Server.SHARE_URL+"*path", self.handle_download)
-        self.route("GET", [Server.BROWSE_URL+"*path", "/"], self.handle_browse)
+        self.route("GET", Server.BROWSE_URL+"*path", self.handle_browse)
         self.route("GET", ["/preferences.html", "/preferences"], self.handle_preferences)
         self.route("GET", Server.FILE_URL+"*path", self.handle_file_info)
         self.route("GET", Server.DELETE_URL+"*path", self.handle_file_delete)
@@ -55,6 +56,7 @@ class Server(RESTServer):
         self.route("GET", Server.SEARCH_URL, self.handle_search)
         self.route("GET", Server.DISCONNECT_URL, self.handle_disconnect)
         self.route("GET", Server.NEW_DIR_URL+"*path", self.handle_new_dir)
+        self.route("GET", "/session/delete", self.handle_session_delete)
         self.default(self.handle_www, methods="GET")
 
         self.route("POST", Server.UPLOAD_URL+"*path", self.handle_upload)
@@ -282,3 +284,9 @@ class Server(RESTServer):
             "can_read": True,
             "can_write": False
         })
+
+    def handle_redirect(self, req : HTTPRequest, res : HTTPResponse):
+        res.serve301("/browse")
+
+    def handle_session_delete(self, req : HTTPRequest, res : HTTPResponse):
+        res.header("Set-Cookie", "session=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT")

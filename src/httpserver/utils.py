@@ -75,3 +75,15 @@ def sha256(s):
     m=hashlib.sha256()
     m.update(bytes(s, "utf-8"))
     return m.digest()
+
+def tuplist_to_dict(tuplelist):
+    out={}
+    for k in tuplelist:
+        out[k[0]]=k[1]
+    return out
+
+def dictinit(*args):
+    out={}
+    for k in args:
+        out.update(k)
+    return k

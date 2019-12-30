@@ -7,6 +7,7 @@ import time
 
 from src.httpserver import log
 from src.httpserver.filecache import filecache
+from src.httpserver.utils import dictinit
 
 from .socketwrapper import SocketWrapper
 from .formfile import FormFile
@@ -372,8 +373,11 @@ class HTTPResponse(_HTTP):
     def serve204(self, header={}, data={}, file=None, filegen=None ): self.serv(204, header, data, file, filegen)
 
     def serve300(self, header={}, data={}, file=None, filegen=None ): self.serv(300, header, data, file, filegen)
-    def serve301(self, header={}, data={}, file=None, filegen=None ): self.serv(301, header, data, file, filegen)
-    def serve302(self, header={}, data={}, file=None, filegen=None ): self.serv(302, header, data, file, filegen)
+    def serve301(self, url, header={}, data={}, file=None, filegen=None ):
+
+        self.serv(301, dictinit(header, {"Location": url }), data, file, filegen)
+    def serve302(self, url, header={}, data={}, file=None, filegen=None ):
+        self.serv(301, dictinit(header, {"Location": url }), data, file, filegen)
 
     def serve400(self, header={}, data={}, file=None, filegen=None ): self.serv(400, header, data, file, filegen)
     def serve401(self, header={}, data={}, file=None, filegen=None ): self.serv(401, header, data, file, filegen)

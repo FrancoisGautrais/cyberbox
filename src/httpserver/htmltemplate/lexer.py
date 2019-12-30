@@ -29,8 +29,6 @@ class Lexer:
 
     def read(self):
         self.c=self.fd.read(1)
-        while self.c in [" ", "\t", "\n"]:
-            self.c=self.fd.read(1)
 
         return self.c;
 
@@ -81,6 +79,9 @@ class Lexer:
         self.read()
 
     def next(self):
+
+        while self.c in [" ", "\t", "\n"]:
+            self.c=self.fd.read(1)
         self.string=""
         if self.cis(Lexer.IDENT_FIRST):  self._read_ident()
         elif self.cis(Lexer.NUMBERS_FIRST):  self._read_numbers()

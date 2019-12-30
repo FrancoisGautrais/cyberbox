@@ -56,14 +56,12 @@ function main(){
 }
 
 function confirm_modify(){
-    x=$("#edit_can_read").is(":checked")?"r":""
-    x+=$("#edit_can_write").is(":checked")?"w":""
-    x+=$("#edit_can_exec").is(":checked")?"x":""
-    x+=$("#edit_is_hidden").is(":checked")?"h":""
+    x=$("#s_perm").val().join("")+($("#edit_is_hidden").is(":checked")?"h":"")
     data={
         "attrs" : x
     }
     modal("loading")
+    console.log(data)
     $.ajax({
             type: 'POST',
             processData: false, // important
@@ -117,9 +115,8 @@ function _edit_file(data)
     modalClose("loading")
     modal("edit_file")
     $("#edit_name").val(data["name"])
-    $("#edit_can_read").prop('checked', data["attrs"].search("r")>=0);
-    $("#edit_can_write").prop('checked', data["attrs"].search("w")>=0);
-    $("#edit_can_exec").prop('checked', data["attrs"].search("x")>=0);
+    $("#s_perm").val(data.attrs.split(""))
+    $('select').formSelect();
     $("#edit_is_hidden").prop('checked', data["attrs"].search("h")>=0);
     M.updateTextFields();
 }
@@ -192,7 +189,8 @@ function padd(x, n=2) {
 function autoreplace_date(text){
     timestamp=parseFloat(text)
     date = new Date(timestamp * 1000)
-    return padd(date.getDate())+"/"+padd(date.getMonth()+1)+"/"+date.getFullYear()+" "+padd(date.getHours())+":"+padd(date.getMinutes())
+    if(data.user.mobile) return padd(date.getDate())+"/"+padd(date.getMonth()+1)+"/"+date.getFullYear()
+    else return padd(date.getDate())+"/"+padd(date.getMonth()+1)+"/"+date.getFullYear()+" "+padd(date.getHours())+":"+padd(date.getMinutes())
 }
 
 
@@ -205,7 +203,7 @@ function autoreplace_boundtext(text){
     {
         line=min(text.length, text.substr(0, max_size))
         text=text.substr(max_size)
-        out+=line+((i+1<nline)?"<br>":"")
+        out+=line+((i<nline)?"<br>":"")
     }
     return out
 }
@@ -268,23 +266,25 @@ function file_info()
 function click_open(dir, name, isdir)
 {
     setCurrentFile(dir, name, isdir)
-    $("#fc_name").val(name)
-    $("#fc_download").val(isdir?"Ouvrir":"Télécharger")
+    $("#fc_name").html(name)
+    $("#fc_download").html(isdir?"Ouvrir":"Télécharger")
+    $("#fc_download_icon").html(isdir?"folder_open":"file_download")
 
-    $("#fc_info").on("click", function(){modalClose("file_click"); file_info()})
-    $("#fc_download").on("click", function(){
+    $("#fc_info_a").on("click", function(){modalClose("file_click"); file_info()})
+    $("#fc_download_a").on("click", function(){
         modalClose("file_click");
         window.location.href=(isdir?"/browse/":"/share/")+dir+"/"+name
     })
-    $("#fc_modify").on("click", function(){modalClose("file_click"); edit_file(dir, name)})
-    $("#fc_remove").on("click", function(){ modalClose("file_click");confirm_delete()})
+    $("#fc_modify_a").on("click", function(){modalClose("file_click"); edit_file(dir, name)})
+    $("#fc_remove_a").on("click", function(){ modalClose("file_click");confirm_delete()})
     modal("file_click")
 }
 
 function autoreplace_size(value){
-    if(value>=GB) return (value/GB).toFixed(1)+" Gio"
-    if(value>=MB) return (value/MB).toFixed(1)+" Mio"
-    if(value>=KB) return (value/KB).toFixed(1)+" Kio"
+    var m=!data.user.mobile
+    if(value>=GB) return (value/GB).toFixed(m?1:0)+(m?" Gio":"G")
+    if(value>=MB) return (value/MB).toFixed(m?1:0)+(m?" Mio":"M")
+    if(value>=KB) return (value/KB).toFixed(m?1:0)+(m?" Kio":"K")
     return value+" o"
 }
 

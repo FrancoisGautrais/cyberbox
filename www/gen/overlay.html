@@ -49,72 +49,74 @@
         <center><span class="card-title" >Editer</span></center>
     </div>
     <div class="card-action row">
-        <div class="col s12">
-            <div  class="input-field ">
-                <input <#if(not(get('user', 'admin')), 'disabled')>  id="edit_name" type="text" class="validate">
-                <label for="edit_name">Nom</label>
-            </div>
-        </div>
-        <div class="row col s12">
-            <div class="switch col s12">
-                Permission de lecture
-                <label>
-                      <input type="checkbox" id="edit_can_read">
-                      <span class="lever"></span>
-                </label>
-            </div>
-        </div>
-        <div class="row col s12">
-            <div class="switch col s12">
-                Permission d'écriture
-                <label>
-                      <input type="checkbox" id="edit_can_write">
-                      <span class="lever"></span>
-                </label>
-            </div>
-        </div>
-        <div class="row col s12">
-            <div class="switch col s12">
-                Permission d'éxecuter
-                <label>
-                      <input type="checkbox" id="edit_can_exec">
-                      <span class="lever"></span>
-                </label>
-            </div>
-        </div>
-        <div class="row col s12">
-            <div class="switch col s12">
-                Fichier caché
-                <label>
-                      <input type="checkbox" id="edit_is_hidden">
-                      <span class="lever"></span>
-                </label>
-            </div>
-        </div>
+        <#row(input_text("edit_name", "Nom", "text", "", not(get("user","admin"))))>
+        <#row(multiple_select("s_perm", "Permission", objl("r", "Lecture", "w", "Écriture", "x", "Execution")))>
+        <#row(checkbox("edit_is_hidden", "Fichier caché"))>
+
         <a class="btn fond-color-1 color-4 col  s6" onclick="confirm_delete()">Supprimer</a>
         <a class="btn fond-color-2 color-4 col  s6" onclick="confirm_modify()">Modifier</a>
     </div>
 </div>
 
-<div class="card darken-1 modal" id="file_info">
-    <div class="card-action">
-        <table>
-            <tbody id="fi_tbody">
-            </tbody>
-        </table>
-    </div>
+<div  class="darken-1 modal" id="file_info">
+    <table>
+        <tbody id="fi_tbody">
+        </tbody>
+    </table>
 </div>
 
-<div class="card darken-1 modal" id="file_click">
-    <div class="card-content">
-        <center><span class="card-title" id="fc_name"></span></center>
+<div class="collection modal row" id="file_click">
+    <center><a class="collection-item color-5" ><b id="fc_name"></b></a></center>
+    <!--<center><a class="collection-item color-3" id="fc_info">Informations</a></center>
+    <center><a class="collection-item color-3" id="fc_download">Télécharger</a></center>
+    <center><a class="collection-item color-3" id="fc_modify">Modifier</a></center>
+    <center><a class="collection-item color-3" id="fc_remove">Supprimer</a></center>-->
+    <div class="col s6 m3 l3">
+        <div class="card light-grey darken-2">
+            <a id="fc_info_a">
+                <center> <i class="material-icons color-5 medium-icon">info</i></center>
+                <div class="custom-card-action card-action">
+                    <span class="color-5">
+                        <center class="tile-filename" id="fc_info">Informations</center>
+                    </span>
+                </div>
+            </a>
+        </div>
     </div>
-    <div class="card-action row">
-        <div class="collection">
-            <a class="collection-item" id="fc_info">Informations</a>
-            <a class="collection-item" id="fc_download">Télécharger</a>
-            <a class="collection-item" id="fc_modify">Modifier</a>
-            <a class="collection-item" id="fc_remove">Supprimer</a>
+    <div class="col s6 m3 l3">
+        <div class="card light-grey darken-2" >
+            <a id="fc_download_a">
+                <center> <i class="material-icons color-3 medium-icon" id="fc_download_icon">file_download</i></center>
+                <div class="custom-card-action card-action">
+                    <span class="color-5">
+                        <center class="tile-filename" id="fc_download">Télécharger</center>
+                    </span>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col s6 m3 l3">
+        <div class="card light-grey darken-2" >
+            <a id="fc_modify_a">
+                <center> <i class="material-icons color-2 medium-icon">create</i></center>
+                <div class="custom-card-action card-action">
+                    <span class="color-5">
+                        <center class="tile-filename" id="fc_modify">Modifier</center>
+                    </span>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col s6 m3 l3">
+        <div class="card light-grey darken-2">
+            <a id="fc_remove_a">
+                <center> <i class="material-icons color-1 medium-icon">delete</i></center>
+                <div class="custom-card-action card-action">
+                    <span class="color-5">
+                        <center class="tile-filename" id="fc_remove">Supprimer</center>
+                    </span>
+                </div>
+            </a>
         </div>
     </div>
 </div>

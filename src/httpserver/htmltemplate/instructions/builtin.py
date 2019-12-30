@@ -32,6 +32,20 @@ def inst_kv(args, data):
 def inst_list(args, data):
     return args
 
+def inst_objl(args, data):
+    out={}
+    i=0
+    while i+1<len(args):
+        out[args[i]]=args[i+1]
+        i+=2
+    return out
+
+
+def inst_None(args, data): return None
+
+def inst_bloc(args, data):
+    return args[-1]
+
 def inst_object(args, data):
     obj={}
     for x in args:

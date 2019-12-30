@@ -64,17 +64,17 @@ function radioValue(name, val=null) {
 function show_display_options(){
     modal('display')
     {{#user}}
-        radioValue("display", data.user.display)
-        radioValue("sort", data.user.sort)
-        radioValue("order", data.user.order)
+        $("#s_display").val(data.user.display)
+        $("#s_sort").val(data.user.sort)
+        $("#s_order").val(data.user.order)
     {{/user}}
 }
 
 function confirm_display(){
     obj = {
-        order: radioValue("order"),
-        sort: radioValue("sort"),
-        display: radioValue("display")
+        order: $("#s_order").val(),
+        sort: $("#s_sort").val(),
+        display: $("#s_display").val()
     }
     needRefresh=obj.display!=data.user.display
     if(!needRefresh)
@@ -82,8 +82,6 @@ function confirm_display(){
 
     $.ajax({
         type: 'POST',
-        processData: false, // important
-        contentType: false, // important
         data: JSON.stringify(obj),
         headers: {
             "Content-Type": "application/json"
@@ -180,7 +178,7 @@ function clearSearchBar() {
         <center><span class="card-title" >Options</span></center>
     </div>
     <div class="card-action row">
-        <center>
+        <center><!--
             <p class="radio-group">
                 <span>Affichage :</span>
                 <label>
@@ -217,7 +215,10 @@ function clearSearchBar() {
                     <input name="group_order" type="radio" data-value="dec"/>
                     <span  class="radio">Décroissant</span>
                 </label>
-            </p>
+            </p>-->
+            <#row(select("s_display", "Affichage", objl("list", "Liste", "tile","Tuiles")))>
+            <#row(select("s_sort", "Trier par", objl("name", "Nom", "date","Date", "size", "Taille")))>
+            <#row(select("s_order", "Ordre", objl("inc", "Croissant", "dec","Décroissant")))>
         </center>
 
         <div class="row">

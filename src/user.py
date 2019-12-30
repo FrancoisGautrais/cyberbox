@@ -51,6 +51,10 @@ class User:
     def modify(self, js):
         self._update(js)
 
+
+    def is_mobile(self):
+        return ("Mobi" in self.infos)# or ("iPhone" in self.infos) or ("Android" in self.infos)
+
     def json(self):
         return {
             "id" : self.id,
@@ -62,7 +66,7 @@ class User:
             "order": self.order,
             "sort": self.sort,
             "admin": self.admin,
-            "mobile" : "Mobi" in self.infos
+            "mobile" : self.is_mobile()
         }
 
     @staticmethod
