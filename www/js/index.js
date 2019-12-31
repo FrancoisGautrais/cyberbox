@@ -265,6 +265,7 @@ function file_info()
 
 function click_open(dir, name, isdir)
 {
+    clearTextSelection();
     setCurrentFile(dir, name, isdir)
     $("#fc_name").html(name)
     $("#fc_download").html(isdir?"Ouvrir":"Télécharger")
@@ -278,6 +279,7 @@ function click_open(dir, name, isdir)
     $("#fc_modify_a").on("click", function(){modalClose("file_click"); edit_file(dir, name)})
     $("#fc_remove_a").on("click", function(){ modalClose("file_click");confirm_delete()})
     modal("file_click")
+    return false;
 }
 
 function autoreplace_size(value){
@@ -289,7 +291,7 @@ function autoreplace_size(value){
 }
 
 
-MIME_TO_TYPES={
+MIME_TO_ICON={
     "audio" : { "*": "audiotrack"},
     "video" : { "*": "movie"},
     "image" : { "*": "photo"},
@@ -304,36 +306,52 @@ MIME_TO_TYPES={
     "*" : "insert_drive_file"
 }
 
+MIME_TO_TYPES={
+    "audio" : { "*": "audio"},
+    "video" : { "*": "video"},
+    "image" : { "*": "image"},
+    "text" : { "*": "text" },
+    "application" :  {
+		//Archives
+		"zip,x-bzip,x-tar,x-rar-compressed,bzip2,x-tar+gzip,gzip" : "archive",
 
-function initMimeTypes()
+		//defaut
+		"*" 				: "text"
+	},
+    "*" : "text"
+}
+
+
+function initMimeTypes(input)
 {
-	out={ "*" : MIME_TO_TYPES["*"]}
-	for(var k in MIME_TO_TYPES) {
+	out={ "*" : input["*"]}
+	for(var k in input) {
 		if(k!="*") {
-			for(var s in MIME_TO_TYPES[k])
+			for(var s in input[k])
 			{
-				val=MIME_TO_TYPES[k][s]
+				val=input[k][s]
 				list=s.split(",")
 				for(var l in list)
 					out[k+"/"+list[l]] = val
 			}
 		}
 	}
-	MIME_TO_TYPES=out
+	return out
 }
 
-initMimeTypes()
+MIME_TO_ICON=initMimeTypes(MIME_TO_ICON)
+MIME_TO_TYPES=initMimeTypes(MIME_TO_TYPES)
 
-function mimeToTypes(mime){
+function mimeTo(input, mime){
 	mime=mime.split("/")
 	first=mime[0]
 	second=mime[1]
-	if( !(first in MIME_TO_TYPES) )  return MIME_TO_TYPES["*"]
-	if( !(second in MIME_TO_TYPES[first])) return MIME_TO_TYPES[first]["*"]
-	return MIME_TO_TYPES[first][second]
+	if( !(first in input) )  return input["*"]
+	if( !(second in input[first])) return input[first]["*"]
+	return input[first][second]
 }
 
-function autoreplace_mime(mime) {  return mimeToTypes(mime) }
+function autoreplace_mime(mime) {  return mimeTo(MIME_TO_ICON, mime) }
 
 function autoreplace_menupath(path)
 {

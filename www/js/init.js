@@ -103,3 +103,15 @@ $(document).ready(function(){
     }
     $('select').formSelect();
 })
+
+function clearTextSelection()
+{
+    var sel = window.getSelection ? window.getSelection() : document.selection;
+    if (sel) {
+        if (sel.removeAllRanges) {
+            sel.removeAllRanges();
+        } else if (sel.empty) {
+            sel.empty();
+        }
+    }
+}

@@ -29,6 +29,11 @@ def new_from_fs(dir, name):
         raise Exception("Error ",absp, ": not a file and not a directory")
 
 
+class Meta:
+    AUTEUR="Auteur"
+    TITRE="Titre"
+
+
 class _Entry:
     DIRECTORY="dir"
     FILE="file"

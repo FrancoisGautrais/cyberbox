@@ -139,12 +139,12 @@ class Server(RESTServer):
         #
         # Use Meta HTML with /*.html or /gen/**
         #
-        if lpath and (lpath[0]=="gen" or (len(lpath)==1 and lpath[0].endswith(".html"))):
+        if lpath and (lpath[0]=="gen" or (len(lpath)==1 and lpath[0].endswith(".html"))) and not conf.USE_BROWSER_CACHE:
             res.serve_file_gen(path, { "user" : client.json() })
         else:
             res.header("Last-Modified", "Wed, 21 Oct 2015 07:28:00 GMT")
             res.header("age", "30")
-            if req.header("If-Modified-Since") and conf.USE_BROWSER_CACHE: res.serv304()
+            if req.header("If-Modified-Since"): res.serv304()
             else: res.serve_file(path)
 
     def handle_browse(self, req : HTTPRequest, res : HTTPResponse):
