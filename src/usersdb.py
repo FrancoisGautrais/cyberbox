@@ -2,11 +2,11 @@
 import os
 import json
 
-from src.httpserver import log
+from src.http_server import log
 from src.user import User
 import time
 from src import conf
-from src.httpserver.utils import sha256
+from src.http_server.utils import sha256
 
 class UserDB:
     def __init__(self, js={}):

@@ -2,14 +2,14 @@ import os
 
 
 
-from src.httpserver import log, utils
+from src.http_server import log, utils
 from src.user import User
-from .httpserver.restserver import HTTPRequest, HTTPResponse, HTTPServer
+from .http_server.restserver import HTTPRequest, HTTPResponse, HTTPServer
 from src import conf, error
 from .filedb import FileDB
-from src.httpserver.htmltemplate.htmlgen import html_gen
+from src.http_server.htmltemplate.htmlgen import html_gen
 from src.usersdb import UserDB
-from src.httpserver.restserver import RESTServer
+from src.http_server.restserver import RESTServer
 
 CACHED_FILES=[ "/js/jquery.min.js", "/js/materialize.min.js", "/js/sha256.js", "/css/materialize.css" ]
 

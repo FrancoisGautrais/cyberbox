@@ -1,7 +1,7 @@
 from os import path
 
-from src.httpserver import log
-from src.httpserver.httpserver import HTTPServer
+from src.http_server import log
+from src.http_server.httpserver import HTTPServer
 
 def SERVER_SINGLE_THREAD():
     return HTTPServer.SINGLE_THREAD

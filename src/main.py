@@ -1,12 +1,12 @@
-from src.httpserver.afdurl import AfdUrl
+from src.http_server.afdurl import AfdUrl
 
 from src import conf
 from src.server import Server
 import sys
 import os
 import signal
-from src.httpserver import log
-from src.httpserver.filecache import filecache
+from src.http_server import log
+from src.http_server.filecache import filecache
 
 
 def do_pidfile():

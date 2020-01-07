@@ -1,9 +1,9 @@
 from src import conf, error
 import os
-from src.httpserver.utils import mime_to_type
+from src.http_server.utils import mime_to_type
 
-from src.httpserver import log
-from src.httpserver.filecache import filecache
+from src.http_server import log
+from src.http_server.filecache import filecache
 
 def _attr(obj, key, default):
     return obj[key] if (key in obj) else default
