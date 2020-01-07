@@ -4,7 +4,7 @@ from threading import Lock
 from threading import Thread
 import hashlib
 
-from src.httpserver.filecache import filecache
+from .filecache import filecache
 
 def path_to_list(p):
     out=[]

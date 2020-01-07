@@ -5,7 +5,7 @@ from threading import Thread
 import traceback
 import time
 
-from src.httpserver import log
+from . import log
 
 
 class SocketWrapper:

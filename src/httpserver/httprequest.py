@@ -5,13 +5,13 @@ import traceback
 import os
 import time
 
-from src.httpserver import log
-from src.httpserver.filecache import filecache
-from src.httpserver.utils import dictinit
+from . import log
+from .filecache import filecache
+from .utils import dictinit
 
 from .socketwrapper import SocketWrapper
 from .formfile import FormFile
-from src.httpserver.htmltemplate.htmlgen import html_gen
+from .htmltemplate.htmlgen import html_gen
 
 HTTP_OK=200
 HTTP_BAD_REQUEST=400
@@ -40,6 +40,7 @@ _HTTP_CODE={
     300: "Multiple Choices",
     301: "Moved Permanently",
     302: "Found",
+    304: "Not Modified",
 
     400: "Bad Request",
     401: "Unauthorized",
@@ -380,8 +381,11 @@ class HTTPResponse(_HTTP):
     def serve301(self, url, header={}, data={}, file=None, filegen=None ):
 
         self.serv(301, dictinit(header, {"Location": url }), data, file, filegen)
-    def serve302(self, url, header={}, data={}, file=None, filegen=None ):
-        self.serv(301, dictinit(header, {"Location": url }), data, file, filegen)
+
+    def serve302(self, url, header={}, data={}, file=None, filegen=None):
+        self.serv(301, dictinit(header, {"Location": url}), data, file, filegen)
+
+    def serve304(self, header={}, data={}, file=None, filegen=None ): self.serv(304, header, data, file, filegen)
 
     def serve400(self, header={}, data={}, file=None, filegen=None ): self.serv(400, header, data, file, filegen)
     def serve401(self, header={}, data={}, file=None, filegen=None ): self.serv(401, header, data, file, filegen)

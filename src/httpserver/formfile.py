@@ -2,7 +2,7 @@
 from .socketwrapper import SocketWrapper
 from src import conf
 from os import  path
-from src.httpserver import log
+from . import log
 
 class FormFile:
 

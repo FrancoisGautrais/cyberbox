@@ -1,6 +1,6 @@
 from threading import Condition, Lock
 
-from src.httpserver import log
+from . import log
 
 
 class WaitQueue:

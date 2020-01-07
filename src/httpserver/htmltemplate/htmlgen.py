@@ -1,7 +1,7 @@
-from src.httpserver import log
-from src.httpserver.filecache import filecache
+from .. import log
+from ..filecache import filecache
 from ..utils import html_template_string
-from src.httpserver.htmltemplate.lexer import Lexer
+from ..htmltemplate.lexer import Lexer
 import time
 from .instructions_loader import call
 

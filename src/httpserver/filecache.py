@@ -4,7 +4,7 @@ from io import StringIO
 from io import BytesIO
 import magic
 
-from src.httpserver import log
+from . import log
 
 
 from threading import Lock

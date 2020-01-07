@@ -1,4 +1,4 @@
-from src.httpserver.filecache import filecache
+from ...filecache import filecache
 from ..htmlgen import html_gen_fd
 import  copy
 import json

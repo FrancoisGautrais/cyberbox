@@ -1,5 +1,5 @@
 from src import conf
-from src.httpserver import log
+from . import log
 from .socketwrapper import SocketWrapper, ServerSocket
 from .httprequest import HTTPResponse, HTTPRequest, HTTP_OK, STR_HTTP_ERROR, HTTP_NOT_FOUND
 from .utils import Callback, start_thread
