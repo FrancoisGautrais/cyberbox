@@ -1,6 +1,6 @@
 
 from .socketwrapper import SocketWrapper
-from src import conf
+
 from os import  path
 from . import log
 
@@ -54,7 +54,7 @@ class FormFile:
 
 
     def save(self, p):
-        out=path.normpath(conf.share(p)+"/"+self.filename)
+        out=path.normpath(p+"/"+self.filename)
 
         # si 'out" est un dossier => filename = "" => Pas de fichier
         if self.filename=="":

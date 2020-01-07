@@ -6,8 +6,8 @@ import os
 
 class RESTServer(HTTPServer):
 
-    def __init__(self, ip="localhost"):
-        HTTPServer.__init__(self, ip)
+    def __init__(self, ip="localhost", attrs={"mode" : HTTPServer.SPAWN_THREAD}):
+        HTTPServer.__init__(self, ip, attrs)
         self._handlers={}
         self._defaulthandler=None
         self.default(RESTServer._404, self)

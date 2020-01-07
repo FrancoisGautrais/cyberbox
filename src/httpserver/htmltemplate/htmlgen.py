@@ -58,9 +58,9 @@ class Instruction:
 
 class HtmlGen:
 
-    def __init__(self, filename=None, isFile=True, fd=None):
+    def __init__(self, filename=None, isFile=True, fd=None, encoding="utf-8"):
         self.filename=filename
-        self.fd=filecache.open(filename, "r") if filename else fd
+        self.fd=filecache.open(filename, "r", encoding=encoding) if filename else fd
         self.text=""
         self.c=""
 

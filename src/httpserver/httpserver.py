@@ -1,4 +1,4 @@
-from src import conf
+
 from . import log
 from .socketwrapper import SocketWrapper, ServerSocket
 from .httprequest import HTTPResponse, HTTPRequest, HTTP_OK, STR_HTTP_ERROR, HTTP_NOT_FOUND
@@ -14,10 +14,9 @@ class HTTPServer(ServerSocket):
     SPAWN_THREAD="spawn"
     CONST_THREAD="const"
     N_THREAD=4
-    def __init__(self, ip="localhost"):
+    def __init__(self, ip="localhost", attrs={ "mode" : SPAWN_THREAD}):
         ServerSocket.__init__(self)
         self._ip=ip
-        attrs=conf.SERVER
         if isinstance(attrs, str): attrs={ "mode": attrs }
         self.mode=attrs["mode"] if "mode" in attrs else HTTPServer.CONST_THREAD
         if self.mode==HTTPServer.CONST_THREAD:

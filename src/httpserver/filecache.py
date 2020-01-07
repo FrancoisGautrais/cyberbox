@@ -121,8 +121,14 @@ class FileCache:
     def mime(self, path, invalidate=False):
         return self._get_cached(path, invalidate).mime if not self.bypass else _mime(path)
 
-    def open(self, path, mode="r", invalidate=False):
-        return self._get_cached(path, invalidate).open(mode) if not self.bypass else open(path, mode)
+    def open(self, path, mode="r", invalidate=False, encoding="utf-8"):
+        if not self.bypass:
+            return self._get_cached(path, invalidate).open(mode)
+        else:
+            if "b" in mode:
+                return open(path, mode)
+            else:
+                return open(path, mode, encoding=encoding)
 
 class filecache:
     @staticmethod
@@ -138,4 +144,4 @@ class filecache:
     def mime(path, inv=False): return FileCache._INSTANCE.mime(path, inv)
 
     @staticmethod
-    def open(path, mode="r", inv=False): return FileCache._INSTANCE.open(path, mode, inv)
+    def open(path, mode="r", inv=False, encoding="utf-8"): return FileCache._INSTANCE.open(path, mode, inv, encoding)

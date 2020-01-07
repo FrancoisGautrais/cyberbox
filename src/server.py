@@ -43,7 +43,7 @@ class Server(RESTServer):
     DISCONNECT_URL = "/disconnect/"
 
     def __init__(self):
-        RESTServer.__init__(self, conf.LISTEN_HOST)
+        RESTServer.__init__(self, conf.LISTEN_HOST, conf.SERVER)
         self.db=FileDB.load()
         self.users=UserDB.load()
         self.route("GET", "/", self.handle_redirect)
@@ -139,12 +139,12 @@ class Server(RESTServer):
         #
         # Use Meta HTML with /*.html or /gen/**
         #
-        if (lpath and (lpath[0]=="gen" or (len(lpath)==1 and lpath[0].endswith(".html")))) or not conf.USE_BROWSER_CACHE:
+        if lpath and (lpath[0]=="gen" or (len(lpath)==1 and lpath[0].endswith(".html"))):
             res.serve_file_gen(path, { "user" : client.json() })
         else:
             res.header("Last-Modified", "Wed, 21 Oct 2015 07:28:00 GMT")
             res.header("age", "30")
-            if req.header("If-Modified-Since"): res.serve304()
+            if req.header("If-Modified-Since") and conf.USE_BROWSER_CACHE: res.serve304()
             else: res.serve_file(path)
 
     def handle_browse(self, req : HTTPRequest, res : HTTPResponse):
