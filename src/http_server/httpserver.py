@@ -57,7 +57,7 @@ class HTTPServer(ServerSocket):
             req.stop_time = time.time()
             req.total_time = req.stop_time - req.start_time
 
-            log.debug(req.method+" "+req.url+" -> %.3f ms" % (req.total_time*1000))
+            log.info(req.method+" "+req.url+" -> %.3f ms" % (req.total_time*1000))
             #attente de la prochaine requete
             soc, t = self.waitqueue.dequeue()
             req = HTTPRequest(soc) if soc else None
@@ -69,7 +69,10 @@ class HTTPServer(ServerSocket):
 
         res.write(req.get_socket())
         req.get_socket().close()
-        log.debug(req.method + " " + req.url + " -> %.3f ms" % (req.total_time * 1000))
+
+        req.stop_time = time.time()
+        req.total_time = req.stop_time - req.start_time
+        log.info(req.method + " " + req.url + " -> %.3f ms" % (req.total_time * 1000))
 
     def handlerequest(self, req, res):
         pass
