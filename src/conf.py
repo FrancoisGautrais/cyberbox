@@ -21,6 +21,7 @@ SHARE_DIR = "share/"
 SAVE_DIR = "save/"
 LOG_LEVEL = 0
 PIDFILE="/var/run/cyberbox.pid"
+LOGFILE="/var/log/cyber-box.log"
 SERVER=SERVER_CONST_THREAD(4)
 USE_CACHE=False
 USE_BROWSER_CACHE=False

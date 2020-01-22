@@ -23,9 +23,17 @@ class Log:
     def __init__(self, level, fd):
         self.fd=fd
         self.lvl=level
+        self.file="/var/log/cyber-box.log"
+
+    def _to_log_file(self, x):
+        with open(self.file, "a+") as f:
+            f.write(x)
+
 
     def _log(self, lvl, s):
-        if lvl>=self.lvl: self.fd.write(_time_str()+"|"+Log.LEVEL_STR[lvl]+"| "+s+"\n")
+        if lvl>=self.lvl:
+            self.fd.write(_time_str()+"|"+Log.LEVEL_STR[lvl]+"| "+s+"\n")
+            self._to_log_file(_time_str() + "|" + Log.LEVEL_STR[lvl] + "| " + s + "\n")
 
     def log(self, level, *args):
        arg=[ ]
