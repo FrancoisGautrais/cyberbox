@@ -56,10 +56,7 @@ class User:
 
 
     def is_mobile(self):
-        try:
-            return ("Mobi" in self.infos)# or ("iPhone" in self.infos) or ("Android" in self.infos)
-        except:
-            log.error("user::is_mobile(), self.infos = "+str(self.infos))
+        return ("Mobi" in self.infos)# or ("iPhone" in self.infos) or ("Android" in self.infos)
 
     def json(self):
         return {
