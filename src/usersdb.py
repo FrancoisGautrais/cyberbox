@@ -35,6 +35,7 @@ class UserDB:
         return None
 
     def new_user(self, info, user=None):
+        print("===== User Agent : ", info)
         x=User.from_info(info, user)
         if user in self.auth and self.auth[user]:
             x.admin=self.auth[user].admin
