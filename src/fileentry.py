@@ -154,7 +154,7 @@ class FileEntry(_Entry):
         stat=os.stat(self.abspath)
         _Entry._update(self, stat)
         self.size=stat.st_size
-        self.mime=filecache.mime(self.abspath)
+        #self.mime=filecache.mime(self.abspath)
         return error.ERR_OK
 
     def remove(self, isAdmin):
