@@ -10,7 +10,7 @@ fi
 start_server() {
     cd $DIR/src
     git pull || True
-    python3 main.py 2> /var/log/cyber-box.err
+    python3 main.py
 }
 
 update_source() {
