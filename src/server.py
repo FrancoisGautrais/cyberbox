@@ -71,7 +71,6 @@ class Server(RESTServer):
         if "session" in req.cookies:
             client=self.users.find_user(req.cookies["session"])
         if not client:
-            print(req._headers)
             client = self.users.new_user(req.header("User-Agent"), None)
             res.header("Set-Cookie", "session="+client.id+"; Max-Age="+str(User.DUREE_SESSION)+"; Path=/")
         if isAction: client.inc_actions()
