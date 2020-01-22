@@ -23,7 +23,7 @@ class Log:
     def __init__(self, level, fd):
         self.fd=fd
         self.lvl=level
-        self.file="/var/log/cyber-box.log"
+        self.file="cyber-box.log"
 
     def _to_log_file(self, x):
         with open(self.file, "a+") as f:

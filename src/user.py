@@ -1,6 +1,9 @@
-
+import json
 import time
 from uuid import uuid4
+
+from src.http_server import log
+
 
 def uuid():
     return str(uuid4()).replace("-","")[:16]
@@ -53,7 +56,10 @@ class User:
 
 
     def is_mobile(self):
-        return ("Mobi" in self.infos)# or ("iPhone" in self.infos) or ("Android" in self.infos)
+        try:
+            return ("Mobi" in self.infos)# or ("iPhone" in self.infos) or ("Android" in self.infos)
+        except:
+            log.error("user::is_mobile(), self.infos = "+str(self.infos))
 
     def json(self):
         return {
