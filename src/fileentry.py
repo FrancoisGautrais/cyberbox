@@ -112,9 +112,10 @@ class _Entry:
         return error.ERR_OK
 
     def search(self, search, isadmin, results=[]):
-        match = search["match"].lower() if "match" in search else None
-        if self.is_hidden(isadmin): return False
-        if match and not (match in self.name.lower()): return False
+        if (not "match" in search) or self.is_hidden(isadmin): return False
+        name = self.name.lower()
+        for match in search["match"].lower().split("+"):
+            if not match in name: return False
         return True
 
 class FileEntry(_Entry):

@@ -133,7 +133,6 @@ function filterName(filter) {
     filter=$("#it-search-bar").val().toLowerCase()
     $(".sortable").each(function(idx, el){
         el=$(el)
-        console.log(el.data("name").toLowerCase(), filter)
         if(el.data("name").toLowerCase().search(filter)>=0) el.show()
         else el.hide()
     })
