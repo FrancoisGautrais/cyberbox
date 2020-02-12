@@ -34,10 +34,10 @@ class HTTPServer(ServerSocket):
         while True:
             x=super().accept()
             if self.mode==HTTPServer.SINGLE_THREAD:
-                self._handlerequest_oneshot(HTTPRequest(x))
+                self._handlerequest_oneshot(x)
             elif self.mode==HTTPServer.SPAWN_THREAD:
-                req = HTTPRequest(x)
-                start_thread( Callback(HTTPServer._handlerequest_oneshot, self, req))
+
+                start_thread( Callback(HTTPServer._handlerequest_oneshot, self, x))
             elif self.mode==HTTPServer.CONST_THREAD:
                 self.waitqueue.enqueue( (x, time.time()) )
 
@@ -62,7 +62,8 @@ class HTTPServer(ServerSocket):
             soc, t = self.waitqueue.dequeue()
             req = HTTPRequest(soc) if soc else None
 
-    def _handlerequest_oneshot(self, req : HTTPRequest):
+    def _handlerequest_oneshot(self, x):
+        req = HTTPRequest(x)
         req.parse()
         res=HTTPResponse(200, )
         self.handlerequest(req, res)
