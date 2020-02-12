@@ -9,7 +9,7 @@ fi
 
 start_server() {
     cd $DIR/src
-    git pull || True
+    git pull || true
     python3 main.py
 }
 
