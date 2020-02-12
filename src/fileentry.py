@@ -253,7 +253,8 @@ class DirEntry(_Entry):
                 self.add(name)
 
         #on vérifie que tous les fichiers de la base existent sur le disque
-        for name in self.children:
+        keys= list(self.children)
+        for name in keys:
             if not name in children:
                 del self.children[name]
         if not self.can_write(isAdmin): return error.ERR_OK
